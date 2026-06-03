@@ -1,0 +1,917 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bugun rejasi — Smart Note</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(-45deg, #e0f2fe, #ffffff, #bfdbfe, #eff6ff, #dbeafe);
+    background-size: 400% 400%;
+    animation: gradientMove 15s ease infinite;
+    color: #0f172a;
+    padding: 24px 16px;
+    overflow-x: hidden;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.22), transparent 65%);
+    filter: blur(12px);
+    z-index: -1;
+    animation: floatGlow 8s ease-in-out infinite alternate;
+}
+
+body::before {
+    top: -120px;
+    left: -120px;
+}
+
+body::after {
+    right: -130px;
+    bottom: -130px;
+    animation-delay: 2s;
+}
+
+@keyframes floatGlow {
+    from { transform: translateY(0) scale(1); }
+    to { transform: translateY(35px) scale(1.08); }
+}
+
+.container {
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo-wrap {
+    width: 86px;
+    height: 86px;
+    margin: 0 auto 14px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(147, 197, 253, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 20px 50px rgba(37, 99, 235, 0.20);
+    backdrop-filter: blur(18px);
+    overflow: hidden;
+    padding: 10px;
+}
+
+.logo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    margin-bottom: 16px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.68);
+    border: 1px solid rgba(147, 197, 253, 0.72);
+    color: #2563eb;
+    font-weight: 950;
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.13);
+    backdrop-filter: blur(14px);
+}
+
+.header h1 {
+    font-size: clamp(36px, 6vw, 56px);
+    background: linear-gradient(90deg, #1d4ed8, #38bdf8, #2563eb, #60a5fa);
+    background-size: 220% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 950;
+    letter-spacing: -1.4px;
+    animation: textShine 4s linear infinite;
+}
+
+@keyframes textShine {
+    to { background-position: 220% center; }
+}
+
+.header p {
+    color: #475569;
+    font-size: 17px;
+    margin-top: 8px;
+    font-weight: 700;
+}
+
+.main-nav {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 22px auto 0;
+}
+
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 16px;
+    border-radius: 999px;
+    color: #2563eb;
+    background: rgba(255,255,255,0.74);
+    border: 1px solid rgba(147,197,253,0.72);
+    text-decoration: none;
+    font-weight: 950;
+    box-shadow: 0 12px 28px rgba(37,99,235,0.12);
+    transition: 0.22s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: #ffffff;
+    background: linear-gradient(90deg,#2563eb,#38bdf8);
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px rgba(37,99,235,0.24);
+}
+
+.plan-hero {
+    position: relative;
+    padding: 28px;
+    border-radius: 32px;
+    background: rgba(255,255,255,0.84);
+    border: 1px solid rgba(147,197,253,0.58);
+    box-shadow: 0 28px 80px rgba(37,99,235,0.18);
+    backdrop-filter: blur(18px);
+    overflow: hidden;
+    margin-bottom: 26px;
+}
+
+.plan-hero::before {
+    content: "";
+    position: absolute;
+    width: 240px;
+    height: 240px;
+    right: -90px;
+    top: -90px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(56,189,248,0.28), transparent 68%);
+}
+
+.plan-hero > * {
+    position: relative;
+    z-index: 1;
+}
+
+.plan-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    align-items: flex-start;
+    margin-bottom: 22px;
+}
+
+.plan-title h2 {
+    font-size: 31px;
+    color: #0f172a;
+    letter-spacing: -0.6px;
+}
+
+.plan-title p {
+    margin-top: 6px;
+    color: #475569;
+    font-weight: 800;
+    line-height: 1.5;
+}
+
+.date-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    border-radius: 999px;
+    padding: 11px 15px;
+    color: #0369a1;
+    background: rgba(224,242,254,0.86);
+    border: 1px solid #bae6fd;
+    font-weight: 950;
+}
+
+.progress-wrap {
+    border-radius: 24px;
+    padding: 18px;
+    background: linear-gradient(135deg, rgba(239,246,255,0.92), rgba(224,242,254,0.78));
+    border: 1px solid rgba(147,197,253,0.72);
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 13px;
+    color: #1e293b;
+    font-weight: 950;
+}
+
+.progress-info span:last-child {
+    color: #2563eb;
+    white-space: nowrap;
+}
+
+.progress-track {
+    width: 100%;
+    height: 18px;
+    border-radius: 999px;
+    background: #dbeafe;
+    overflow: hidden;
+    border: 1px solid #bfdbfe;
+    box-shadow: inset 0 1px 5px rgba(37,99,235,0.12);
+}
+
+.progress-fill {
+    height: 100%;
+    width: {{ today_plan.progress_percent }}%;
+    border-radius: inherit;
+    background: linear-gradient(90deg,#2563eb,#38bdf8,#22c55e);
+    box-shadow: 0 10px 24px rgba(37,99,235,0.22);
+    transition: width 0.35s ease;
+}
+
+.plan-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.mini-stat {
+    border-radius: 22px;
+    padding: 17px;
+    background: rgba(255,255,255,0.80);
+    border: 1px solid rgba(147,197,253,0.56);
+    box-shadow: 0 16px 38px rgba(37,99,235,0.12);
+}
+
+.mini-stat-icon {
+    font-size: 23px;
+    margin-bottom: 7px;
+}
+
+.mini-stat-number {
+    font-size: 28px;
+    font-weight: 950;
+    color: #0f172a;
+    line-height: 1;
+}
+
+.mini-stat-label {
+    margin-top: 6px;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 850;
+}
+
+.empty-state {
+    padding: 34px 24px;
+    border-radius: 28px;
+    border: 2px dashed #93c5fd;
+    background: rgba(255,255,255,0.64);
+    color: #475569;
+    text-align: center;
+    font-weight: 850;
+    box-shadow: 0 18px 55px rgba(37,99,235,0.11);
+}
+
+.empty-state .empty-icon {
+    font-size: 46px;
+    margin-bottom: 12px;
+}
+
+.empty-state h3 {
+    color: #0f172a;
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.groups-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.group-card {
+    border-radius: 28px;
+    padding: 20px;
+    background: rgba(255,255,255,0.82);
+    border: 1px solid rgba(147,197,253,0.58);
+    box-shadow: 0 22px 60px rgba(37,99,235,0.15);
+    backdrop-filter: blur(16px);
+    min-height: 240px;
+}
+
+.group-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.group-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: #0f172a;
+    font-size: 19px;
+    font-weight: 950;
+}
+
+.group-count {
+    min-width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    font-weight: 950;
+}
+
+.task-list {
+    display: grid;
+    gap: 13px;
+}
+
+.task-card {
+    position: relative;
+    border-radius: 22px;
+    padding: 16px;
+    background: rgba(248,250,252,0.92);
+    border: 1px solid #dbeafe;
+    box-shadow: 0 12px 28px rgba(15,23,42,0.07);
+    overflow: hidden;
+}
+
+.task-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 6px;
+    background: #2563eb;
+}
+
+.task-card.overdue::before { background: #ef4444; }
+.task-card.completed::before { background: #22c55e; }
+
+.task-card.completed {
+    opacity: 0.68;
+    filter: grayscale(0.14);
+}
+
+.task-card.completed .task-title,
+.task-card.completed .task-desc {
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+    text-decoration-color: rgba(34,197,94,0.72);
+}
+
+.task-title {
+    font-size: 17px;
+    font-weight: 950;
+    color: #0f172a;
+    margin-bottom: 7px;
+    word-break: break-word;
+}
+
+.task-desc {
+    color: #64748b;
+    line-height: 1.45;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    word-break: break-word;
+}
+
+.task-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 950;
+    border: 1px solid transparent;
+}
+
+.badge-time {
+    color: #1d4ed8;
+    background: #dbeafe;
+    border-color: #bfdbfe;
+}
+
+.badge-status.status-pending {
+    color: #1d4ed8;
+    background: #dbeafe;
+    border-color: #bfdbfe;
+}
+
+.badge-status.status-overdue {
+    color: #991b1b;
+    background: #fee2e2;
+    border-color: #fecaca;
+}
+
+.badge-status.status-completed {
+    color: #166534;
+    background: #dcfce7;
+    border-color: #bbf7d0;
+}
+
+.badge-category.category-oqish {
+    color: #1d4ed8;
+    background: #dbeafe;
+    border-color: #93c5fd;
+}
+
+.badge-category.category-ish {
+    color: #6d28d9;
+    background: #ede9fe;
+    border-color: #c4b5fd;
+}
+
+.badge-category.category-shaxsiy {
+    color: #166534;
+    background: #dcfce7;
+    border-color: #86efac;
+}
+
+.badge-category.category-sport {
+    color: #047857;
+    background: #d1fae5;
+    border-color: #6ee7b7;
+}
+
+.badge-category.category-oilaviy {
+    color: #be185d;
+    background: #fce7f3;
+    border-color: #f9a8d4;
+}
+
+.badge-category.category-muhim {
+    color: #b91c1c;
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+.task-actions {
+    display: flex;
+    gap: 9px;
+    flex-wrap: wrap;
+}
+
+.complete-btn {
+    flex: 1;
+    min-width: 150px;
+    border: none;
+    border-radius: 15px;
+    padding: 11px 13px;
+    color: white;
+    cursor: pointer;
+    font-weight: 950;
+    background: linear-gradient(90deg,#22c55e,#16a34a);
+    box-shadow: 0 12px 28px rgba(34,197,94,0.22);
+    transition: 0.22s;
+}
+
+.complete-btn.pending-mode {
+    background: linear-gradient(90deg,#64748b,#38bdf8);
+    box-shadow: 0 12px 28px rgba(100,116,139,0.22);
+}
+
+.complete-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+.complete-btn:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+.group-empty {
+    padding: 18px;
+    border-radius: 20px;
+    background: rgba(239,246,255,0.68);
+    border: 1px dashed #93c5fd;
+    color: #64748b;
+    font-weight: 850;
+    text-align: center;
+}
+
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%) translateY(24px);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 100;
+    min-width: min(420px, calc(100vw - 28px));
+    padding: 14px 16px;
+    border-radius: 18px;
+    color: #166534;
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+    box-shadow: 0 20px 55px rgba(15,23,42,0.20);
+    font-weight: 950;
+    text-align: center;
+    transition: 0.25s;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast.achievement {
+    color: #78350f;
+    background: linear-gradient(135deg, #fef3c7, #fffbeb);
+    border-color: #fbbf24;
+}
+
+.toast.error {
+    color: #991b1b;
+    background: #fee2e2;
+    border-color: #fecaca;
+}
+
+@media(max-width: 980px) {
+    .plan-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .groups-grid { grid-template-columns: 1fr; }
+}
+
+@media(max-width: 720px) {
+    body { padding: 18px 12px; }
+    .plan-hero { padding: 22px; border-radius: 26px; }
+    .plan-top { flex-direction: column; align-items: stretch; }
+    .date-pill { justify-content: center; white-space: normal; }
+    .progress-info { flex-direction: column; }
+    .plan-stats { grid-template-columns: 1fr; }
+    .group-card { padding: 17px; border-radius: 24px; }
+    .task-actions { flex-direction: column; }
+    .complete-btn { width: 100%; }
+}
+</style>
+</head>
+<body>
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+<div class="container">
+    <div class="header">
+        <div class="logo-wrap">
+            <img src="{% static 'image/note-avatar.png' %}" alt="Smart Note">
+        </div>
+        <div class="header-badge">📅 Today Plan</div>
+        <h1>Bugun rejasi</h1>
+        <p>Faqat bugungi reminderlar, progress va status bo‘yicha guruhlangan vazifalar.</p>
+        <nav class="main-nav" aria-label="Asosiy navigatsiya">
+            <a href="{% url 'home' %}" class="nav-link">🏠 Bosh sahifa</a>
+            <a href="{% url 'today_plan' %}" class="nav-link active">📅 Bugun rejasi</a>
+            <a href="{% url 'achievements' %}" class="nav-link">🏆 Achievements</a>
+        </nav>
+    </div>
+
+    <section class="plan-hero">
+        <div class="plan-top">
+            <div class="plan-title">
+                <h2>Bugungi vazifalar nazorati</h2>
+                <p>Progress bugungi bajarilgan vazifalar soni umumiy bugungi vazifalar soniga bo‘linib hisoblanadi.</p>
+            </div>
+            <div class="date-pill">🗓️ Bugun: <span class="js-today-date">{{ today_plan.today_date }}</span></div>
+        </div>
+
+        <div class="progress-wrap">
+            <div class="progress-info">
+                <span class="js-progress-text">{{ today_plan.progress_text }}</span>
+                <span><span class="js-progress-percent">{{ today_plan.progress_percent }}</span>%</span>
+            </div>
+            <div class="progress-track" aria-label="Bugungi progress">
+                <div class="progress-fill js-progress-fill"></div>
+            </div>
+        </div>
+
+        <div class="plan-stats">
+            <div class="mini-stat">
+                <div class="mini-stat-icon">🗂️</div>
+                <div class="mini-stat-number js-total-count">{{ today_plan.total_count }}</div>
+                <div class="mini-stat-label">Bugungi jami</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-icon">⏳</div>
+                <div class="mini-stat-number js-pending-count">{{ today_plan.pending_count }}</div>
+                <div class="mini-stat-label">Kutilmoqda</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-icon">⚠️</div>
+                <div class="mini-stat-number js-overdue-count">{{ today_plan.overdue_count }}</div>
+                <div class="mini-stat-label">Kechikdi</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-icon">✅</div>
+                <div class="mini-stat-number js-completed-count">{{ today_plan.completed_count }}</div>
+                <div class="mini-stat-label">Bajarildi</div>
+            </div>
+        </div>
+    </section>
+
+    <main id="todayPlanContent">
+        {% if today_plan.is_empty %}
+            <div class="empty-state js-today-empty">
+                <div class="empty-icon">🌤️</div>
+                <h3>Bugun uchun vazifa yo‘q</h3>
+                <p>Yangi reminder qo‘shsangiz, bugungi sanaga tegishli vazifalar shu sahifada chiqadi.</p>
+            </div>
+        {% else %}
+            <div class="groups-grid js-groups-grid">
+                <section class="group-card" data-group="pending">
+                    <div class="group-head">
+                        <div class="group-title">⏳ Kutilmoqda</div>
+                        <div class="group-count js-group-count-pending">{{ today_plan.pending_count }}</div>
+                    </div>
+                    <div class="task-list js-group-list-pending">
+                        {% for note in today_plan.groups.pending %}
+                            <article class="task-card pending" data-note-id="{{ note.id }}">
+                                <h3 class="task-title">{{ note.text }}</h3>
+                                <p class="task-desc">{% if note.description %}{{ note.description }}{% else %}Izoh qo‘shilmagan{% endif %}</p>
+                                <div class="task-meta">
+                                    <span class="badge badge-time">⏰ {{ note.remind_at|date:"H:i" }}</span>
+                                    <span class="badge badge-category {{ note.category_class }}">{{ note.category_icon }} {{ note.get_category_display }}</span>
+                                    <span class="badge badge-status status-pending">⏳ Kutilmoqda</span>
+                                </div>
+                                <div class="task-actions">
+                                    <button type="button" class="complete-btn js-complete-toggle" data-note-id="{{ note.id }}" data-completed="false">✅ Bajarildi</button>
+                                </div>
+                            </article>
+                        {% empty %}
+                            <div class="group-empty">Kutilayotgan vazifa yo‘q.</div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <section class="group-card" data-group="overdue">
+                    <div class="group-head">
+                        <div class="group-title">⚠️ Kechikdi</div>
+                        <div class="group-count js-group-count-overdue">{{ today_plan.overdue_count }}</div>
+                    </div>
+                    <div class="task-list js-group-list-overdue">
+                        {% for note in today_plan.groups.overdue %}
+                            <article class="task-card overdue" data-note-id="{{ note.id }}">
+                                <h3 class="task-title">{{ note.text }}</h3>
+                                <p class="task-desc">{% if note.description %}{{ note.description }}{% else %}Izoh qo‘shilmagan{% endif %}</p>
+                                <div class="task-meta">
+                                    <span class="badge badge-time">⏰ {{ note.remind_at|date:"H:i" }}</span>
+                                    <span class="badge badge-category {{ note.category_class }}">{{ note.category_icon }} {{ note.get_category_display }}</span>
+                                    <span class="badge badge-status status-overdue">⚠️ Kechikdi</span>
+                                </div>
+                                <div class="task-actions">
+                                    <button type="button" class="complete-btn js-complete-toggle" data-note-id="{{ note.id }}" data-completed="false">✅ Bajarildi</button>
+                                </div>
+                            </article>
+                        {% empty %}
+                            <div class="group-empty">Kechikkan vazifa yo‘q.</div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <section class="group-card" data-group="completed">
+                    <div class="group-head">
+                        <div class="group-title">✅ Bajarildi</div>
+                        <div class="group-count js-group-count-completed">{{ today_plan.completed_count }}</div>
+                    </div>
+                    <div class="task-list js-group-list-completed">
+                        {% for note in today_plan.groups.completed %}
+                            <article class="task-card completed" data-note-id="{{ note.id }}">
+                                <h3 class="task-title">{{ note.text }}</h3>
+                                <p class="task-desc">{% if note.description %}{{ note.description }}{% else %}Izoh qo‘shilmagan{% endif %}</p>
+                                <div class="task-meta">
+                                    <span class="badge badge-time">⏰ {{ note.remind_at|date:"H:i" }}</span>
+                                    <span class="badge badge-category {{ note.category_class }}">{{ note.category_icon }} {{ note.get_category_display }}</span>
+                                    <span class="badge badge-status status-completed">✅ Bajarildi</span>
+                                </div>
+                                <div class="task-actions">
+                                    <button type="button" class="complete-btn pending-mode js-complete-toggle" data-note-id="{{ note.id }}" data-completed="true">↩️ Kutilmoqda</button>
+                                </div>
+                            </article>
+                        {% empty %}
+                            <div class="group-empty">Bajarilgan vazifa yo‘q.</div>
+                        {% endfor %}
+                    </div>
+                </section>
+            </div>
+        {% endif %}
+    </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const csrfInput = document.querySelector("input[name='csrfmiddlewaretoken']");
+const csrfToken = csrfInput ? csrfInput.value : "";
+const todayPlanContent = document.getElementById("todayPlanContent");
+const toast = document.getElementById("toast");
+
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function showToast(message, type = "success") {
+    if (!toast) return;
+    toast.textContent = message;
+    toast.className = `toast show ${type === "achievement" ? "achievement" : type === "error" ? "error" : ""}`;
+    setTimeout(() => {
+        toast.className = "toast";
+    }, 2300);
+}
+
+function showAchievementToasts(badges) {
+    if (!badges || !badges.length) return;
+    badges.forEach((badge, index) => {
+        setTimeout(() => {
+            showToast(`🏆 Yangi achievement: ${badge.icon || "🏆"} ${badge.title}`, "achievement");
+        }, index * 650);
+    });
+}
+
+function statusEmoji(status) {
+    if (status === "completed") return "✅";
+    if (status === "overdue") return "⚠️";
+    return "⏳";
+}
+
+function statusLabel(status) {
+    if (status === "completed") return "Bajarildi";
+    if (status === "overdue") return "Kechikdi";
+    return "Kutilmoqda";
+}
+
+function renderTask(note, groupKey) {
+    const completed = Boolean(note.completed);
+    const cardClass = completed ? "completed" : groupKey === "overdue" ? "overdue" : "pending";
+    const btnClass = completed ? "complete-btn pending-mode js-complete-toggle" : "complete-btn js-complete-toggle";
+    const btnText = completed ? "↩️ Kutilmoqda" : "✅ Bajarildi";
+    const status = completed ? "completed" : groupKey === "overdue" ? "overdue" : "pending";
+
+    return `
+        <article class="task-card ${cardClass}" data-note-id="${escapeHTML(note.id)}">
+            <h3 class="task-title">${escapeHTML(note.text)}</h3>
+            <p class="task-desc">${escapeHTML(note.description_display || "Izoh qo‘shilmagan")}</p>
+            <div class="task-meta">
+                <span class="badge badge-time">⏰ ${escapeHTML((note.remind_at_display || "").slice(11) || note.remind_at_display || "")}</span>
+                <span class="badge badge-category ${escapeHTML(note.category_class)}">${escapeHTML(note.category_icon)} ${escapeHTML(note.category_display)}</span>
+                <span class="badge badge-status status-${status}">${statusEmoji(status)} ${statusLabel(status)}</span>
+            </div>
+            <div class="task-actions">
+                <button type="button" class="${btnClass}" data-note-id="${escapeHTML(note.id)}" data-completed="${completed ? "true" : "false"}">${btnText}</button>
+            </div>
+        </article>
+    `;
+}
+
+function renderGroup(key, title, emoji, notes) {
+    const countClass = `js-group-count-${key}`;
+    const listClass = `js-group-list-${key}`;
+    const emptyText = key === "pending" ? "Kutilayotgan vazifa yo‘q." : key === "overdue" ? "Kechikkan vazifa yo‘q." : "Bajarilgan vazifa yo‘q.";
+    const tasksHtml = notes.length
+        ? notes.map((note) => renderTask(note, key)).join("")
+        : `<div class="group-empty">${emptyText}</div>`;
+
+    return `
+        <section class="group-card" data-group="${key}">
+            <div class="group-head">
+                <div class="group-title">${emoji} ${title}</div>
+                <div class="group-count ${countClass}">${notes.length}</div>
+            </div>
+            <div class="task-list ${listClass}">${tasksHtml}</div>
+        </section>
+    `;
+}
+
+function renderPlan(plan) {
+    document.querySelector(".js-today-date").textContent = plan.today_date;
+    document.querySelector(".js-progress-text").textContent = plan.progress_text;
+    document.querySelector(".js-progress-percent").textContent = plan.progress_percent;
+    document.querySelector(".js-progress-fill").style.width = `${plan.progress_percent}%`;
+    document.querySelector(".js-total-count").textContent = plan.total_count;
+    document.querySelector(".js-pending-count").textContent = plan.pending_count;
+    document.querySelector(".js-overdue-count").textContent = plan.overdue_count;
+    document.querySelector(".js-completed-count").textContent = plan.completed_count;
+
+    if (plan.is_empty) {
+        todayPlanContent.innerHTML = `
+            <div class="empty-state js-today-empty">
+                <div class="empty-icon">🌤️</div>
+                <h3>Bugun uchun vazifa yo‘q</h3>
+                <p>Yangi reminder qo‘shsangiz, bugungi sanaga tegishli vazifalar shu sahifada chiqadi.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const groups = plan.groups || { pending: [], overdue: [], completed: [] };
+    todayPlanContent.innerHTML = `
+        <div class="groups-grid js-groups-grid">
+            ${renderGroup("pending", "Kutilmoqda", "⏳", groups.pending || [])}
+            ${renderGroup("overdue", "Kechikdi", "⚠️", groups.overdue || [])}
+            ${renderGroup("completed", "Bajarildi", "✅", groups.completed || [])}
+        </div>
+    `;
+}
+
+async function loadTodayPlan() {
+    const response = await fetch("/api/today-plan/", {
+        method: "GET",
+        headers: { "X-Requested-With": "XMLHttpRequest" },
+    });
+    const data = await response.json();
+    if (!response.ok || !data.ok) {
+        throw new Error("Bugun rejasi yangilanmadi");
+    }
+    renderPlan(data.today_plan);
+}
+
+document.addEventListener("click", async (event) => {
+    const button = event.target.closest(".js-complete-toggle");
+    if (!button) return;
+
+    const noteId = button.dataset.noteId;
+    const isCompleted = button.dataset.completed === "true";
+    const endpoint = isCompleted ? `/api/notes/${noteId}/pending/` : `/api/notes/${noteId}/complete/`;
+
+    button.disabled = true;
+
+    try {
+        const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRFToken": csrfToken,
+            },
+            body: JSON.stringify({}),
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) {
+            throw new Error(data.message || "Status o‘zgarmadi");
+        }
+        await loadTodayPlan();
+        showAchievementToasts(data.achievements_unlocked || []);
+        if (!isCompleted && (!data.achievements_unlocked || !data.achievements_unlocked.length)) {
+            showToast("Reminder bajarildi deb belgilandi.");
+        }
+        if (isCompleted) {
+            showToast("Reminder qayta kutilmoqda holatiga qaytarildi.");
+        }
+    } catch (error) {
+        button.disabled = false;
+        showToast(error.message || "Xatolik yuz berdi", "error");
+    }
+});
+</script>
+</body>
+</html>

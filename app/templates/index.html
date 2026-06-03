@@ -1,0 +1,2579 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Note</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(-45deg, #e0f2fe, #ffffff, #bfdbfe, #eff6ff, #dbeafe);
+    background-size: 400% 400%;
+    animation: gradientMove 15s ease infinite;
+    color: #0f172a;
+    padding: 24px 16px;
+    overflow-x: hidden;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.22), transparent 65%);
+    filter: blur(12px);
+    z-index: -1;
+    animation: floatGlow 8s ease-in-out infinite alternate;
+}
+
+body::before {
+    top: -120px;
+    left: -120px;
+}
+
+body::after {
+    right: -130px;
+    bottom: -130px;
+    animation-delay: 2s;
+}
+
+@keyframes floatGlow {
+    from { transform: translateY(0) scale(1); }
+    to { transform: translateY(35px) scale(1.08); }
+}
+
+.container {
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 34px;
+}
+
+.logo-wrap {
+    width: 92px;
+    height: 92px;
+    margin: 0 auto 16px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.70);
+    border: 1px solid rgba(147, 197, 253, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 20px 50px rgba(37, 99, 235, 0.22);
+    backdrop-filter: blur(18px);
+    overflow: hidden;
+    padding: 10px;
+    animation: logoFloat 3.2s ease-in-out infinite;
+}
+
+.logo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+@keyframes logoFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    margin-bottom: 16px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.66);
+    border: 1px solid rgba(147, 197, 253, 0.72);
+    color: #2563eb;
+    font-weight: 900;
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.13);
+    backdrop-filter: blur(14px);
+}
+
+.header h1 {
+    font-size: clamp(38px, 6vw, 58px);
+    background: linear-gradient(90deg, #1d4ed8, #38bdf8, #2563eb, #60a5fa);
+    background-size: 220% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 950;
+    letter-spacing: -1.5px;
+    animation: textShine 4s linear infinite;
+}
+
+@keyframes textShine {
+    to { background-position: 220% center; }
+}
+
+.header p {
+    color: #475569;
+    font-size: 17px;
+    margin-top: 8px;
+    font-weight: 600;
+}
+
+.main-nav {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 22px auto 0;
+}
+
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 16px;
+    border-radius: 999px;
+    color: #2563eb;
+    background: rgba(255,255,255,0.74);
+    border: 1px solid rgba(147,197,253,0.72);
+    text-decoration: none;
+    font-weight: 950;
+    box-shadow: 0 12px 28px rgba(37,99,235,0.12);
+    transition: 0.22s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: #ffffff;
+    background: linear-gradient(90deg,#2563eb,#38bdf8);
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px rgba(37,99,235,0.24);
+}
+
+.dashboard-section {
+    margin-bottom: 34px;
+}
+
+.dashboard-head,
+.section-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.dashboard-head h2,
+.section-head h2 {
+    font-size: 30px;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+}
+
+.dashboard-head p,
+.section-head p {
+    color: #475569;
+    font-weight: 700;
+    margin-top: 5px;
+}
+
+.dashboard-live-badge,
+.filter-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 13px;
+    border-radius: 999px;
+    color: #0369a1;
+    background: rgba(224, 242, 254, 0.78);
+    border: 1px solid #bae6fd;
+    font-size: 13px;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.stat-card {
+    position: relative;
+    min-height: 142px;
+    border-radius: 26px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.80);
+    border: 1px solid rgba(147,197,253,0.55);
+    box-shadow: 0 20px 55px rgba(37,99,235,0.15);
+    backdrop-filter: blur(16px);
+    overflow: hidden;
+    transition: 0.25s;
+}
+
+.stat-card::before {
+    content: "";
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    right: -40px;
+    top: -40px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.23), transparent 68%);
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 26px 70px rgba(37,99,235,0.23);
+}
+
+.stat-icon {
+    position: relative;
+    z-index: 1;
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border: 1px solid #bfdbfe;
+    box-shadow: 0 10px 24px rgba(37,99,235,0.13);
+    font-size: 22px;
+    margin-bottom: 14px;
+}
+
+.stat-number {
+    position: relative;
+    z-index: 1;
+    font-size: 34px;
+    font-weight: 950;
+    color: #0f172a;
+    line-height: 1;
+    letter-spacing: -1px;
+}
+
+.stat-label {
+    position: relative;
+    z-index: 1;
+    margin-top: 7px;
+    color: #475569;
+    font-weight: 850;
+    font-size: 14px;
+}
+
+.stat-card.today .stat-icon { color: #1d4ed8; }
+.stat-card.completed .stat-icon { color: #16a34a; }
+.stat-card.overdue .stat-icon { color: #dc2626; }
+.stat-card.total .stat-icon { color: #7c3aed; }
+
+.nearest-card {
+    grid-column: span 4;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 16px;
+    min-height: 112px;
+    padding: 22px;
+}
+
+.nearest-card .stat-icon {
+    margin-bottom: 0;
+    width: 54px;
+    height: 54px;
+    border-radius: 19px;
+}
+
+.nearest-info {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+}
+
+.nearest-label {
+    color: #2563eb;
+    font-weight: 950;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 5px;
+}
+
+.nearest-title {
+    color: #0f172a;
+    font-size: 20px;
+    font-weight: 950;
+    word-break: break-word;
+}
+
+.nearest-time {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #1d4ed8;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    padding: 10px 13px;
+    border-radius: 15px;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.ai-insight-card {
+    grid-column: span 4;
+    min-height: 0;
+    padding: 24px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(239,246,255,0.86));
+}
+
+.ai-insight-card.ai-warning {
+    border-color: rgba(251, 191, 36, 0.80);
+    box-shadow: 0 24px 70px rgba(245, 158, 11, 0.18);
+}
+
+.ai-insight-card.ai-success {
+    border-color: rgba(34, 197, 94, 0.70);
+    box-shadow: 0 24px 70px rgba(22, 163, 74, 0.16);
+}
+
+.ai-insight-card.ai-empty {
+    border-style: dashed;
+}
+
+.ai-insight-top {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.ai-insight-top .stat-icon {
+    margin-bottom: 0;
+    flex: 0 0 auto;
+}
+
+.ai-title-block {
+    min-width: 0;
+    flex: 1;
+}
+
+.ai-summary {
+    color: #0f172a;
+    font-size: 20px;
+    font-weight: 950;
+    word-break: break-word;
+}
+
+.ai-provider {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 11px;
+    border-radius: 999px;
+    background: rgba(224, 242, 254, 0.90);
+    border: 1px solid #bae6fd;
+    color: #0369a1;
+    font-size: 12px;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.ai-main {
+    position: relative;
+    z-index: 1;
+    color: #334155;
+    font-size: 16px;
+    font-weight: 850;
+    line-height: 1.55;
+    margin-bottom: 16px;
+}
+
+.ai-metrics {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.ai-metric {
+    padding: 12px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(147,197,253,0.52);
+}
+
+.ai-metric b {
+    display: block;
+    color: #0f172a;
+    font-size: 20px;
+    font-weight: 950;
+    line-height: 1;
+}
+
+.ai-metric span {
+    display: block;
+    margin-top: 6px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.ai-recs {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    list-style: none;
+}
+
+.ai-recs li {
+    display: flex;
+    gap: 10px;
+    padding: 13px;
+    border-radius: 18px;
+    background: rgba(248, 250, 252, 0.84);
+    border: 1px solid rgba(226, 232, 240, 0.95);
+}
+
+.ai-rec-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 12px;
+    background: #eff6ff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+}
+
+.ai-recs strong {
+    display: block;
+    color: #0f172a;
+    font-weight: 950;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.ai-recs p {
+    color: #475569;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.ai-generated {
+    position: relative;
+    z-index: 1;
+    margin-top: 12px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 850;
+}
+
+.dashboard-empty,
+.empty {
+    padding: 26px;
+    border-radius: 24px;
+    border: 2px dashed #93c5fd;
+    background: rgba(255,255,255,0.58);
+    color: #475569;
+    font-weight: 850;
+    text-align: center;
+    backdrop-filter: blur(12px);
+}
+
+.dashboard-empty { margin-top: 16px; }
+
+.card,
+.filter-card {
+    position: relative;
+    background: rgba(255,255,255,0.82);
+    border-radius: 30px;
+    padding: 30px;
+    box-shadow: 0 28px 80px rgba(37,99,235,0.18);
+    margin-bottom: 38px;
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(147,197,253,0.52);
+    overflow: hidden;
+}
+
+.card::before,
+.filter-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.72), transparent);
+    transform: translateX(-100%);
+    animation: cardShine 6s infinite;
+    pointer-events: none;
+}
+
+@keyframes cardShine {
+    0% { transform: translateX(-100%); }
+    45% { transform: translateX(100%); }
+    100% { transform: translateX(100%); }
+}
+
+.card > *,
+.filter-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.form-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.form-head h2 {
+    font-size: 28px;
+    color: #0f172a;
+}
+
+.form-head span {
+    display: inline-flex;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+    padding: 14px 16px;
+    border-radius: 16px;
+    margin-bottom: 18px;
+    font-weight: 900;
+}
+
+.form-grid,
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.filter-grid {
+    grid-template-columns: 1.4fr repeat(5, minmax(130px, 1fr));
+    align-items: end;
+}
+
+.form-group,
+.filter-group {
+    margin-bottom: 18px;
+}
+
+.filter-group {
+    margin-bottom: 0;
+}
+
+.form-group.full,
+.filter-group.full {
+    grid-column: 1 / -1;
+}
+
+label {
+    font-weight: 850;
+    display: block;
+    margin-bottom: 8px;
+    color: #1e293b;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 15px 16px;
+    border-radius: 17px;
+    border: 1px solid #bfdbfe;
+    font-size: 15px;
+    outline: none;
+    color: #0f172a;
+    background: rgba(255,255,255,0.92);
+    transition: 0.25s;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 110px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.14);
+    background: #ffffff;
+    transform: translateY(-1px);
+}
+
+.helper-text {
+    margin-top: 8px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.voice-panel {
+    margin: 4px 0 22px;
+    padding: 18px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(239,246,255,0.92), rgba(224,242,254,0.78));
+    border: 1px solid rgba(147,197,253,0.72);
+    box-shadow: 0 18px 45px rgba(37,99,235,0.12);
+}
+
+.voice-panel-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.voice-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 950;
+    color: #0f172a;
+}
+
+.voice-icon-bubble {
+    width: 46px;
+    height: 46px;
+    border-radius: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background: linear-gradient(135deg, #2563eb, #38bdf8);
+    box-shadow: 0 14px 30px rgba(37,99,235,0.28);
+    font-size: 22px;
+}
+
+.voice-btn {
+    border: none;
+    border-radius: 17px;
+    padding: 14px 18px;
+    color: white;
+    font-size: 15px;
+    font-weight: 950;
+    cursor: pointer;
+    background: linear-gradient(90deg,#2563eb,#06b6d4,#2563eb);
+    background-size: 200% auto;
+    box-shadow: 0 16px 38px rgba(37,99,235,0.28);
+    transition: 0.24s;
+}
+
+.voice-btn:hover {
+    transform: translateY(-2px);
+    background-position: right center;
+}
+
+.voice-btn.listening {
+    background: linear-gradient(90deg,#ef4444,#fb7185,#ef4444);
+    animation: voicePulse 1.15s ease-in-out infinite;
+}
+
+@keyframes voicePulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.32), 0 16px 38px rgba(239,68,68,0.20); }
+    50% { box-shadow: 0 0 0 10px rgba(239,68,68,0.06), 0 20px 48px rgba(239,68,68,0.30); }
+}
+
+.voice-status {
+    margin-top: 14px;
+    padding: 13px 15px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.86);
+    color: #475569;
+    border: 1px solid #bfdbfe;
+    font-weight: 850;
+    line-height: 1.5;
+}
+
+.voice-status.success {
+    color: #166534;
+    background: #dcfce7;
+    border-color: #bbf7d0;
+}
+
+.voice-status.error {
+    color: #991b1b;
+    background: #fee2e2;
+    border-color: #fecaca;
+}
+
+.voice-status.info {
+    color: #1d4ed8;
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+.voice-result {
+    display: none;
+    margin-top: 12px;
+    padding: 13px 15px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.72);
+    border: 1px dashed #93c5fd;
+    color: #334155;
+    font-weight: 800;
+}
+
+.voice-result.show {
+    display: block;
+}
+
+.custom-repeat-box {
+    display: none;
+    margin: 0 0 18px;
+    padding: 18px;
+    border-radius: 20px;
+    border: 1px dashed #93c5fd;
+    background: rgba(239, 246, 255, 0.78);
+}
+
+.custom-repeat-box.show {
+    display: block;
+}
+
+.btn,
+.clear-filter-btn {
+    width: 100%;
+    border: none;
+    border-radius: 18px;
+    padding: 16px 18px;
+    color: white;
+    font-size: 16px;
+    font-weight: 950;
+    cursor: pointer;
+    background: linear-gradient(90deg,#2563eb,#38bdf8,#2563eb);
+    background-size: 200% auto;
+    box-shadow: 0 18px 40px rgba(37,99,235,0.28);
+    transition: 0.25s;
+}
+
+.btn:hover,
+.clear-filter-btn:hover {
+    transform: translateY(-2px);
+    background-position: right center;
+    box-shadow: 0 24px 55px rgba(37,99,235,0.38);
+}
+
+.clear-filter-btn {
+    background: linear-gradient(90deg,#64748b,#38bdf8);
+    padding: 14px 16px;
+    font-size: 14px;
+}
+
+.filter-actions-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 14px;
+    align-items: center;
+    margin-top: 16px;
+}
+
+.filter-result-text {
+    color: #475569;
+    font-weight: 900;
+}
+
+.filter-result-text strong {
+    color: #2563eb;
+}
+
+.django-messages {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.message {
+    padding: 14px 16px;
+    border-radius: 16px;
+    font-weight: 900;
+    border: 1px solid #bfdbfe;
+    color: #1d4ed8;
+    background: #eff6ff;
+}
+
+.message.success {
+    color: #166534;
+    background: #dcfce7;
+    border-color: #bbf7d0;
+}
+
+.notes-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+    font-size: 30px;
+    color: #0f172a;
+}
+
+.notes-title small {
+    color: #475569;
+    font-size: 14px;
+    font-weight: 900;
+    background: rgba(255,255,255,0.68);
+    border: 1px solid rgba(147,197,253,0.58);
+    padding: 9px 13px;
+    border-radius: 999px;
+}
+
+.note-list {
+    display: grid;
+    gap: 18px;
+    margin-bottom: 30px;
+}
+
+.note-item {
+    position: relative;
+    background: rgba(255,255,255,0.82);
+    border-radius: 26px;
+    padding: 24px;
+    border-left: 8px solid #2563eb;
+    box-shadow: 0 18px 55px rgba(37,99,235,0.16);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(147,197,253,0.45);
+    border-right: 1px solid rgba(147,197,253,0.45);
+    border-bottom: 1px solid rgba(147,197,253,0.45);
+    transition: 0.25s;
+    overflow: hidden;
+}
+
+.note-item::after {
+    content: "";
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.10);
+}
+
+.note-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 70px rgba(37,99,235,0.24);
+}
+
+.note-item.priority-shoshilinch { border-left-color: #ef4444; }
+.note-item.priority-muhim { border-left-color: #f59e0b; }
+.note-item.priority-oddiy { border-left-color: #2563eb; }
+.note-item.priority-keyinroq { border-left-color: #64748b; }
+
+.note-item.is-completed {
+    opacity: 0.62;
+    border-left-color: #22c55e;
+    filter: grayscale(0.18);
+}
+
+.note-item.is-completed h3,
+.note-item.is-completed .note-desc {
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+    text-decoration-color: rgba(34,197,94,0.75);
+}
+
+.note-item h3 {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 10px;
+    font-size: 22px;
+    color: #0f172a;
+    word-break: break-word;
+}
+
+.note-desc {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 15px;
+    color: #475569;
+    line-height: 1.6;
+    word-break: break-word;
+}
+
+.badges {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 950;
+    border: 1px solid transparent;
+}
+
+.badge-priority.priority-shoshilinch {
+    color: #991b1b;
+    background: #fee2e2;
+    border-color: #fecaca;
+}
+
+.badge-priority.priority-muhim {
+    color: #92400e;
+    background: #fef3c7;
+    border-color: #fde68a;
+}
+
+.badge-priority.priority-oddiy {
+    color: #1d4ed8;
+    background: #dbeafe;
+    border-color: #bfdbfe;
+}
+
+.badge-priority.priority-keyinroq {
+    color: #334155;
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+}
+
+.badge-category {
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+}
+
+.badge-category.category-oqish {
+    color: #1d4ed8;
+    background: #dbeafe;
+    border-color: #93c5fd;
+}
+
+.badge-category.category-ish {
+    color: #6d28d9;
+    background: #ede9fe;
+    border-color: #c4b5fd;
+}
+
+.badge-category.category-shaxsiy {
+    color: #166534;
+    background: #dcfce7;
+    border-color: #86efac;
+}
+
+.badge-category.category-sport {
+    color: #047857;
+    background: #d1fae5;
+    border-color: #6ee7b7;
+}
+
+.badge-category.category-oilaviy {
+    color: #be185d;
+    background: #fce7f3;
+    border-color: #f9a8d4;
+}
+
+.badge-category.category-muhim {
+    color: #b91c1c;
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+.note-item.category-oqish { border-top: 4px solid #60a5fa; }
+.note-item.category-ish { border-top: 4px solid #a78bfa; }
+.note-item.category-shaxsiy { border-top: 4px solid #4ade80; }
+.note-item.category-sport { border-top: 4px solid #34d399; }
+.note-item.category-oilaviy { border-top: 4px solid #f472b6; }
+.note-item.category-muhim { border-top: 4px solid #f87171; }
+
+.badge-repeat {
+    color: #6d28d9;
+    background: #ede9fe;
+    border-color: #ddd6fe;
+}
+
+.badge-status {
+    color: #166534;
+    background: #dcfce7;
+    border-color: #bbf7d0;
+}
+
+.badge-status.status-sent {
+    color: #334155;
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+}
+
+.badge-status.status-completed,
+.badge-completed {
+    color: #166534;
+    background: #dcfce7;
+    border-color: #bbf7d0;
+}
+
+.badge-status.status-overdue {
+    color: #991b1b;
+    background: #fee2e2;
+    border-color: #fecaca;
+}
+
+.badge-snooze {
+    color: #6d28d9;
+    background: #ede9fe;
+    border-color: #ddd6fe;
+}
+
+.note-footer {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.note-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 950;
+    color: #1d4ed8;
+    background: linear-gradient(90deg,#eff6ff,#dbeafe);
+    border: 1px solid #bfdbfe;
+    padding: 10px 13px;
+    border-radius: 15px;
+    font-size: 14px;
+}
+
+.note-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.snooze-form {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-wrap: wrap;
+}
+
+.snooze-select {
+    width: auto;
+    min-width: 190px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    font-weight: 850;
+    font-size: 14px;
+}
+
+.snooze-btn,
+.edit-btn,
+.complete-toggle-btn,
+.delete-btn {
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-weight: 950;
+    transition: 0.22s;
+}
+
+.snooze-btn {
+    background: linear-gradient(90deg,#7c3aed,#38bdf8);
+    box-shadow: 0 12px 28px rgba(124,58,237,0.22);
+}
+
+.edit-btn {
+    background: linear-gradient(90deg,#2563eb,#38bdf8);
+    box-shadow: 0 12px 28px rgba(37,99,235,0.22);
+}
+
+.complete-toggle-btn {
+    background: linear-gradient(90deg,#22c55e,#16a34a);
+    box-shadow: 0 12px 28px rgba(34,197,94,0.24);
+}
+
+.complete-toggle-btn.pending-mode {
+    background: linear-gradient(90deg,#64748b,#38bdf8);
+    box-shadow: 0 12px 28px rgba(100,116,139,0.24);
+}
+
+.complete-toggle-btn:disabled {
+    opacity: 0.65;
+    cursor: wait;
+    transform: none;
+}
+
+.delete-btn {
+    background: linear-gradient(90deg,#ef4444,#fb7185);
+    box-shadow: 0 12px 28px rgba(239,68,68,0.24);
+}
+
+.snooze-btn:hover,
+.edit-btn:hover,
+.complete-toggle-btn:hover:not(:disabled),
+.delete-btn:hover {
+    transform: translateY(-2px);
+}
+
+.edit-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    background: rgba(15, 23, 42, 0.38);
+    backdrop-filter: blur(12px);
+}
+
+.edit-modal-overlay.show {
+    display: flex;
+}
+
+.edit-modal {
+    width: min(760px, 100%);
+    max-height: 92vh;
+    overflow-y: auto;
+    border-radius: 28px;
+    padding: 24px;
+    background: rgba(255,255,255,0.95);
+    border: 1px solid rgba(147,197,253,0.72);
+    box-shadow: 0 30px 90px rgba(15,23,42,0.28);
+}
+
+.edit-modal-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.edit-modal-head h2 {
+    font-size: 26px;
+    color: #0f172a;
+}
+
+.edit-modal-head p {
+    color: #64748b;
+    font-weight: 750;
+    margin-top: 5px;
+}
+
+.modal-close-btn {
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 15px;
+    background: #fee2e2;
+    color: #991b1b;
+    font-size: 22px;
+    font-weight: 950;
+    cursor: pointer;
+}
+
+.edit-modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.modal-save-btn,
+.modal-cancel-btn {
+    border: none;
+    border-radius: 16px;
+    padding: 13px 18px;
+    cursor: pointer;
+    font-weight: 950;
+}
+
+.modal-save-btn {
+    color: white;
+    background: linear-gradient(90deg,#2563eb,#38bdf8);
+    box-shadow: 0 14px 32px rgba(37,99,235,0.24);
+}
+
+.modal-cancel-btn {
+    color: #334155;
+    background: #e2e8f0;
+}
+
+.modal-error {
+    display: none;
+    margin: 10px 0 16px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: #fee2e2;
+    color: #991b1b;
+    font-weight: 900;
+    border: 1px solid #fecaca;
+}
+
+.modal-error.show {
+    display: block;
+}
+
+.loading-line {
+    display: none;
+    margin: 14px 0;
+    color: #2563eb;
+    font-weight: 950;
+}
+
+.loading-line.show {
+    display: block;
+}
+
+.toast {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    z-index: 80;
+    max-width: min(420px, calc(100vw - 32px));
+    padding: 16px 18px;
+    border-radius: 20px;
+    color: #065f46;
+    background: rgba(220, 252, 231, 0.96);
+    border: 1px solid #86efac;
+    box-shadow: 0 22px 60px rgba(15, 23, 42, 0.20);
+    font-weight: 950;
+    line-height: 1.45;
+    transform: translateY(24px);
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.25s;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast.achievement {
+    color: #78350f;
+    background: linear-gradient(135deg, #fef3c7, #fffbeb);
+    border-color: #fbbf24;
+}
+
+.toast.error {
+    color: #991b1b;
+    background: #fee2e2;
+    border-color: #fecaca;
+}
+
+@media(max-width:1080px) {
+    .filter-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .filter-group.search { grid-column: 1 / -1; }
+}
+
+@media(max-width:980px) {
+    .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .nearest-card { grid-column: span 2; grid-template-columns: auto 1fr; }
+    .nearest-time { grid-column: 2; justify-self: start; }
+    .ai-insight-card { grid-column: span 2; }
+    .ai-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ai-recs { grid-template-columns: 1fr; }
+}
+
+@media(max-width:760px) {
+    body { padding: 18px 12px; }
+    .card,
+    .filter-card { padding: 22px; border-radius: 24px; }
+    .dashboard-head,
+    .section-head,
+    .form-head { flex-direction: column; align-items: flex-start; }
+    .stats-grid,
+    .form-grid,
+    .filter-grid { grid-template-columns: 1fr; gap: 0; }
+    .filter-group.search { grid-column: auto; }
+    .nearest-card { grid-column: span 1; grid-template-columns: 1fr; }
+    .nearest-time { grid-column: auto; width: 100%; justify-content: center; white-space: normal; text-align: center; }
+    .ai-insight-card { grid-column: span 1; }
+    .ai-insight-top { align-items: flex-start; flex-wrap: wrap; }
+    .ai-provider { width: 100%; justify-content: center; }
+    .ai-metrics { grid-template-columns: 1fr; }
+    .note-footer { flex-direction: column; align-items: stretch; }
+    .note-time { justify-content: center; flex-wrap: wrap; }
+    .note-actions { width: 100%; justify-content: stretch; }
+    .snooze-form { width: 100%; }
+    .snooze-select { width: 100%; }
+    .snooze-btn,
+    .edit-btn,
+    .complete-toggle-btn,
+    .delete-btn { width: 100%; padding: 13px; }
+    .notes-title { flex-direction: column; align-items: flex-start; font-size: 27px; }
+    .voice-panel-top { align-items: stretch; }
+    .voice-btn { width: 100%; }
+    .filter-actions-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="logo-wrap">
+            <img src="{% static 'image/note-avatar.png' %}" alt="Smart Note">
+        </div>
+        <div class="header-badge">✨ Smart Note</div>
+        <h1>Aqlli eslatmalar tizimi</h1>
+        <p>Eslatma yozing, ovoz orqali yarating, Telegram orqali oling, qidiring va filterlang</p>
+        <nav class="main-nav" aria-label="Asosiy navigatsiya">
+            <a href="{% url 'home' %}" class="nav-link active">🏠 Bosh sahifa</a>
+            <a href="{% url 'today_plan' %}" class="nav-link">📅 Bugun rejasi</a>
+            <a href="{% url 'achievements' %}" class="nav-link">🏆 Achievements</a>
+        </nav>
+    </div>
+
+    <section class="dashboard-section" id="dashboardStats">
+        <div class="dashboard-head">
+            <div>
+                <h2>Dashboard statistika</h2>
+                <p>Bugungi holat, bajarilganlar va eng yaqin eslatma real bazadan olinadi.</p>
+            </div>
+            <span class="dashboard-live-badge">📊 Live database</span>
+        </div>
+
+        <div class="stats-grid">
+            <article class="stat-card today">
+                <div class="stat-icon">📅</div>
+                <div class="stat-number js-stat-today">{{ dashboard_stats.today_count }}</div>
+                <div class="stat-label">Bugungi eslatmalar</div>
+            </article>
+
+            <article class="stat-card completed">
+                <div class="stat-icon">✅</div>
+                <div class="stat-number js-stat-completed">{{ dashboard_stats.completed_count }}</div>
+                <div class="stat-label">Bajarilgan eslatmalar</div>
+            </article>
+
+            <article class="stat-card overdue">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-number js-stat-overdue">{{ dashboard_stats.overdue_count }}</div>
+                <div class="stat-label">Kechikkan eslatmalar</div>
+            </article>
+
+            <article class="stat-card total">
+                <div class="stat-icon">🗂️</div>
+                <div class="stat-number js-stat-total">{{ dashboard_stats.total_count }}</div>
+                <div class="stat-label">Umumiy eslatmalar</div>
+            </article>
+
+            <article class="stat-card nearest-card">
+                <div class="stat-icon">⏰</div>
+                <div class="nearest-info">
+                    <div class="nearest-label">Eng yaqin eslatma</div>
+                    <div class="nearest-title js-nearest-title">
+                        {% if dashboard_stats.nearest %}
+                            {{ dashboard_stats.nearest.title }}
+                        {% else %}
+                            Hozircha rejalashtirilgan eslatma yo‘q
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="nearest-time js-nearest-time">
+                    {% if dashboard_stats.nearest %}
+                        🕒 {{ dashboard_stats.nearest.time_display }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </div>
+            </article>
+
+            <article class="stat-card ai-insight-card ai-{{ ai_recommendation.level }} js-ai-card">
+                <div class="ai-insight-top">
+                    <div class="stat-icon">🤖</div>
+                    <div class="ai-title-block">
+                        <div class="nearest-label">AI tavsiya</div>
+                        <div class="ai-summary js-ai-summary">{{ ai_recommendation.summary }}</div>
+                    </div>
+                    <span class="ai-provider">🧠 Rule-based · API ready</span>
+                </div>
+
+                <p class="ai-main js-ai-primary">{{ ai_recommendation.primary_recommendation }}</p>
+
+                <div class="ai-metrics">
+                    <div class="ai-metric">
+                        <b class="js-ai-score">{{ ai_recommendation.score }}%</b>
+                        <span>AI tartib bahosi</span>
+                    </div>
+                    <div class="ai-metric">
+                        <b class="js-ai-completion-rate">{{ ai_recommendation.metrics.completion_rate }}%</b>
+                        <span>Bajarish foizi</span>
+                    </div>
+                    <div class="ai-metric">
+                        <b class="js-ai-overdue-count">{{ ai_recommendation.metrics.overdue_count }}</b>
+                        <span>Kechikkan</span>
+                    </div>
+                    <div class="ai-metric">
+                        <b class="js-ai-snoozed-total">{{ ai_recommendation.metrics.snoozed_total }}</b>
+                        <span>Snooze soni</span>
+                    </div>
+                </div>
+
+                <ul class="ai-recs js-ai-recs">
+                    {% for rec in ai_recommendation.recommendations %}
+                        <li>
+                            <span class="ai-rec-icon">{{ rec.icon }}</span>
+                            <div>
+                                <strong>{{ rec.title }}</strong>
+                                <p>{{ rec.text }}</p>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <div class="ai-generated">Oxirgi tahlil: <span class="js-ai-generated">{{ ai_recommendation.generated_at_display }}</span></div>
+            </article>
+        </div>
+
+        <div class="dashboard-empty js-dashboard-empty" {% if not dashboard_stats.is_empty %}style="display:none;"{% endif %}>
+            Hozircha hech qanday reminder yo‘q. Birinchi eslatmani qo‘shing — statistika shu yerda chiqadi.
+        </div>
+    </section>
+
+    <div class="card">
+        <div class="form-head">
+            <div>
+                <h2>Yangi eslatma qo‘shish</h2>
+                <p class="helper-text">Vaqt kelganda Telegram bot orqali xabar yuboriladi.</p>
+            </div>
+            <span>🎙️ Voice note ready</span>
+        </div>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        {% if messages %}
+            <div class="django-messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" id="noteForm">
+            {% csrf_token %}
+
+            <div class="voice-panel" id="voicePanel">
+                <div class="voice-panel-top">
+                    <div class="voice-panel-title">
+                        <span class="voice-icon-bubble">🎙️</span>
+                        <div>
+                            <div>Ovoz orqali note yaratish</div>
+                            <div class="helper-text">Masalan: “Ertaga soat 9 da matematika darsini eslat”</div>
+                        </div>
+                    </div>
+                    <button type="button" class="voice-btn" id="voiceNoteBtn">🎙️ Gapirishni boshlash</button>
+                </div>
+                <div class="voice-status info" id="voiceStatus">
+                    Mikrofon tugmasini bosing. Ovoz matnga aylanadi, title/sana/vaqt ajratiladi va vaqt aniq bo‘lsa avtomatik saqlanadi.
+                </div>
+                <div class="voice-result" id="voiceResult"></div>
+            </div>
+
+            <div class="form-group full">
+                <label for="text">Sarlavha</label>
+                <input type="text" id="text" name="text" placeholder="Masalan: Mijozga qo‘ng‘iroq qilish" required>
+            </div>
+
+            <div class="form-group full">
+                <label for="description">Izoh</label>
+                <textarea id="description" name="description" placeholder="Eslatma haqida batafsil yozing..."></textarea>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="date">Sana</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="time">Vaqt</label>
+                    <input type="time" id="time" name="time" required>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="priority">Muhimligi / Priority</label>
+                    <select id="priority" name="priority">
+                        {% for value, label in priority_choices %}
+                            <option value="{{ value }}" {% if value == 'oddiy' %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" name="category">
+                        {% for value, label in category_choices %}
+                            <option value="{{ value }}" {% if value == 'shaxsiy' %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="repeat_type">Takrorlanish</label>
+                    <select id="repeat_type" name="repeat_type">
+                        <option value="none" selected>Takrorlanmaydi</option>
+                        <option value="daily">Har kuni</option>
+                        <option value="weekly">Har hafta</option>
+                        <option value="monthly">Har oy</option>
+                        <option value="mon_fri">Dushanba/Juma kunlari</option>
+                        <option value="custom_days">Custom: har N kunda</option>
+                        <option value="custom_weeks">Custom: har N haftada</option>
+                    </select>
+                </div>
+
+                <div id="customRepeatBox" class="custom-repeat-box">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="repeat_interval" id="repeatIntervalLabel">Interval</label>
+                        <input type="number" id="repeat_interval" name="repeat_interval" min="1" value="1">
+                        <div class="helper-text" id="repeatHelp">Masalan: 3 yozsangiz, har 3 kunda yoki har 3 haftada takrorlanadi.</div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn">Saqlash va rejalashtirish</button>
+        </form>
+    </div>
+
+    <section class="filter-card" id="noteFilterPanel">
+        <div class="section-head">
+            <div>
+                <h2>Search va filter</h2>
+                <p>Sarlavha, sana, status, priority, category va bajarilgan holati bo‘yicha qidiring.</p>
+            </div>
+            <span class="filter-live-badge">⚡ Debounce search</span>
+        </div>
+
+        <div class="filter-grid">
+            <div class="filter-group search">
+                <label for="filterSearch">Search title</label>
+                <input
+                    type="search"
+                    id="filterSearch"
+                    name="search"
+                    placeholder="Masalan: dars, mijoz, to‘lov..."
+                    value="{{ active_filters.search }}"
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="filter-group">
+                <label for="filterDate">Sana</label>
+                <input type="date" id="filterDate" name="date" value="{{ active_filters.date }}">
+            </div>
+
+            <div class="filter-group">
+                <label for="filterStatus">Status</label>
+                <select id="filterStatus" name="status">
+                    <option value="">Hammasi</option>
+                    {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if active_filters.status == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="filterPriority">Priority</label>
+                <select id="filterPriority" name="priority">
+                    <option value="">Hammasi</option>
+                    {% for value, label in priority_choices %}
+                        <option value="{{ value }}" {% if active_filters.priority == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="filterCategory">Category</label>
+                <select id="filterCategory" name="category">
+                    <option value="">Hammasi</option>
+                    {% for value, label in category_choices %}
+                        <option value="{{ value }}" {% if active_filters.category == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="filterCompleted">Bajarilgan?</label>
+                <select id="filterCompleted" name="completed">
+                    <option value="">Hammasi</option>
+                    {% for value, label in completed_choices %}
+                        <option value="{{ value }}" {% if active_filters.completed == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="filter-actions-row">
+            <div class="filter-result-text">
+                Topilgan natija: <strong class="js-filter-count">{{ filtered_count }}</strong> ta
+            </div>
+            <button type="button" class="clear-filter-btn" id="clearFiltersBtn">Clear filters</button>
+        </div>
+
+        <div class="loading-line js-filter-loading">Qidirilmoqda...</div>
+    </section>
+
+    <h2 class="notes-title">
+        Oxirgi eslatmalar
+        <small>⏳ <span class="js-pending-count">{{ pending_count }}</span> ta · ✅ <span class="js-completed-count">{{ completed_count }}</span> ta bajarilgan</small>
+    </h2>
+
+    <div class="note-list" id="noteList">
+        {% for note in notes %}
+            <div class="note-item priority-{{ note.priority }} {{ note.category_class }} {% if note.completed %}is-completed{% endif %}" data-note-id="{{ note.id }}">
+                <h3>{{ note.text }}</h3>
+
+                <div class="note-desc">
+                    {% if note.description %}
+                        {{ note.description }}
+                    {% else %}
+                        Izoh qo‘shilmagan
+                    {% endif %}
+                </div>
+
+                <div class="badges">
+                    <span class="badge badge-priority priority-{{ note.priority }}">
+                        📍 Muhimligi: {{ note.get_priority_display }}
+                    </span>
+
+                    <span class="badge badge-category {{ note.category_class }}">
+                        {{ note.category_icon }} Category: {{ note.get_category_display }}
+                    </span>
+
+                    <span class="badge badge-repeat">
+                        🔁 Takrorlanish: {{ note.get_repeat_label }}
+                    </span>
+
+                    <span class="badge badge-status js-status-badge status-{{ note.status_value }}">
+                        {% if note.status_value == 'completed' %}✅{% elif note.status_value == 'overdue' %}⚠️{% elif note.status_value == 'sent' %}📨{% else %}⏳{% endif %} {{ note.status_label }}
+                    </span>
+
+                    <span class="badge badge-completed js-completed-badge" {% if not note.completed_at %}style="display:none;"{% endif %}>
+                        🏁 Bajarildi: <span class="js-completed-at">{% if note.completed_at %}{{ note.completed_at|date:"d.m.Y H:i" }}{% endif %}</span>
+                    </span>
+
+                    {% if note.snoozed_count > 0 %}
+                        <span class="badge badge-snooze">
+                            😴 Snooze: {{ note.snoozed_count }} marta
+                        </span>
+                    {% endif %}
+                </div>
+
+                <div class="note-footer">
+                    <span class="note-time">
+                        ⏰ Keyingi vaqt: {{ note.remind_at|date:"d.m.Y H:i" }}
+                        {% if note.last_snoozed_at %}
+                            · 😴 Oxirgi snooze: {{ note.last_snoozed_at|date:"d.m.Y H:i" }}
+                        {% endif %}
+                    </span>
+
+                    <div class="note-actions">
+                        <form class="snooze-form js-snooze-form" method="POST" action="{% url 'snooze_note' note.id %}" {% if note.completed %}style="display:none;"{% endif %}>
+                            {% csrf_token %}
+                            <select name="snooze_option" class="snooze-select" aria-label="Snooze vaqtini tanlash">
+                                {% for value, label in snooze_choices %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="snooze-btn">😴 Snooze</button>
+                        </form>
+
+                        <button type="button" class="edit-btn js-edit-note" data-note-id="{{ note.id }}">✏️ Tahrirlash</button>
+
+                        <button
+                            type="button"
+                            class="complete-toggle-btn js-complete-toggle {% if note.completed %}pending-mode{% endif %}"
+                            data-note-id="{{ note.id }}"
+                            data-completed="{% if note.completed %}true{% else %}false{% endif %}"
+                        >
+                            {% if note.completed %}↩️ Kutilmoqda{% else %}✅ Bajarildi{% endif %}
+                        </button>
+
+                        <form method="POST" action="{% url 'delete_note' note.id %}" onsubmit="return confirm('Rostdan o‘chirmoqchimisiz?');">
+                            {% csrf_token %}
+                            <button type="submit" class="delete-btn">O‘chirish</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="empty js-notes-empty">Natija topilmadi. Search yoki filterlarni tozalab ko‘ring.</div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="edit-modal-overlay" id="editModalOverlay" aria-hidden="true">
+    <div class="edit-modal" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+        <div class="edit-modal-head">
+            <div>
+                <h2 id="editModalTitle">Eslatmani tahrirlash</h2>
+                <p>Category, rang, sana, vaqt va boshqa maydonlarni shu oynada o‘zgartiring.</p>
+            </div>
+            <button type="button" class="modal-close-btn" id="editModalClose" aria-label="Yopish">×</button>
+        </div>
+
+        <div class="modal-error" id="editModalError"></div>
+
+        <form id="editNoteForm">
+            <input type="hidden" id="editNoteId" name="note_id">
+
+            <div class="form-group full">
+                <label for="editText">Sarlavha</label>
+                <input type="text" id="editText" name="text" required>
+            </div>
+
+            <div class="form-group full">
+                <label for="editDescription">Izoh</label>
+                <textarea id="editDescription" name="description"></textarea>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="editDate">Sana</label>
+                    <input type="date" id="editDate" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="editTime">Vaqt</label>
+                    <input type="time" id="editTime" name="time" required>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="editPriority">Muhimligi / Priority</label>
+                    <select id="editPriority" name="priority">
+                        {% for value, label in priority_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editCategory">Category</label>
+                    <select id="editCategory" name="category">
+                        {% for value, label in category_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="helper-text">Rang badge avtomatik category bo‘yicha chiqadi.</div>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="editRepeatType">Takrorlanish</label>
+                    <select id="editRepeatType" name="repeat_type">
+                        {% for value, label in repeat_type_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editRepeatInterval">Interval</label>
+                    <input type="number" id="editRepeatInterval" name="repeat_interval" min="1" value="1">
+                    <div class="helper-text">Custom takrorlanish tanlanganida ishlatiladi.</div>
+                </div>
+            </div>
+
+            <div class="edit-modal-actions">
+                <button type="button" class="modal-cancel-btn" id="editModalCancel">Bekor qilish</button>
+                <button type="submit" class="modal-save-btn" id="editModalSave">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const repeatType = document.getElementById("repeat_type");
+    const customRepeatBox = document.getElementById("customRepeatBox");
+    const repeatIntervalLabel = document.getElementById("repeatIntervalLabel");
+    const repeatHelp = document.getElementById("repeatHelp");
+    const noteList = document.getElementById("noteList");
+    const csrfInput = document.querySelector("input[name='csrfmiddlewaretoken']");
+    const csrfToken = csrfInput ? csrfInput.value : "";
+    const toast = document.getElementById("toast");
+    let toastTimer = null;
+    const snoozeChoices = [
+        {% for value, label in snooze_choices %}
+            { value: "{{ value }}", label: "{{ label }}" }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    const editModalOverlay = document.getElementById("editModalOverlay");
+    const editModalClose = document.getElementById("editModalClose");
+    const editModalCancel = document.getElementById("editModalCancel");
+    const editNoteForm = document.getElementById("editNoteForm");
+    const editModalError = document.getElementById("editModalError");
+    const editModalSave = document.getElementById("editModalSave");
+    const noteForm = document.getElementById("noteForm");
+    const voiceNoteBtn = document.getElementById("voiceNoteBtn");
+    const voiceStatus = document.getElementById("voiceStatus");
+    const voiceResult = document.getElementById("voiceResult");
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let voiceRecognition = null;
+    let isListening = false;
+
+    function showToast(message, type = "success") {
+        if (!toast) {
+            if (type === "error") alert(message);
+            return;
+        }
+        clearTimeout(toastTimer);
+        toast.textContent = message;
+        toast.className = `toast show ${type === "achievement" ? "achievement" : type === "error" ? "error" : ""}`;
+        toastTimer = setTimeout(() => {
+            toast.className = "toast";
+        }, type === "achievement" ? 4200 : 2600);
+    }
+
+    function showAchievementToasts(badges) {
+        if (!badges || !badges.length) return;
+        badges.forEach((badge, index) => {
+            setTimeout(() => {
+                showToast(`🏆 Yangi achievement: ${badge.icon || "🏆"} ${badge.title}`, "achievement");
+            }, index * 650);
+        });
+    }
+
+    function setVoiceStatus(message, type = "info") {
+        if (!voiceStatus) return;
+        voiceStatus.textContent = message;
+        voiceStatus.className = `voice-status ${type}`;
+    }
+
+    function showVoiceResult(html) {
+        if (!voiceResult) return;
+        voiceResult.innerHTML = html || "";
+        voiceResult.classList.toggle("show", Boolean(html));
+    }
+
+    function fillMainFormFromParsed(parsed) {
+        if (!parsed) return;
+
+        const textInput = document.getElementById("text");
+        const descriptionInput = document.getElementById("description");
+        const dateInput = document.getElementById("date");
+        const timeInput = document.getElementById("time");
+        const priorityInput = document.getElementById("priority");
+        const categoryInput = document.getElementById("category");
+
+        if (parsed.title && textInput) textInput.value = parsed.title;
+        if (parsed.date && dateInput) dateInput.value = parsed.date;
+        if (parsed.time && timeInput) timeInput.value = parsed.time;
+        if (parsed.priority && priorityInput) priorityInput.value = parsed.priority;
+        if (parsed.category && categoryInput) categoryInput.value = parsed.category;
+        if (descriptionInput && parsed.raw_text) {
+            descriptionInput.value = `Ovoz orqali yaratildi: "${parsed.raw_text}"`;
+        }
+    }
+
+    function focusMissingField(parsed) {
+        if (!parsed || !parsed.missing || !parsed.missing.length) return;
+        const firstMissing = parsed.missing[0];
+        const targetId = firstMissing === "title" ? "text" : firstMissing;
+        const target = document.getElementById(targetId);
+        if (target) {
+            target.focus();
+            target.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+    }
+
+    async function parseVoiceText(rawText) {
+        const response = await fetch("/api/voice-note/parse/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRFToken": csrfToken,
+            },
+            body: JSON.stringify({ text: rawText }),
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) {
+            throw new Error(data.message || "Ovoz matni ajratilmadi");
+        }
+        return data.parsed;
+    }
+
+    async function createNoteFromVoice(parsed) {
+        const payload = {
+            text: parsed.title,
+            description: `Ovoz orqali yaratildi: "${parsed.raw_text}"`,
+            date: parsed.date,
+            time: parsed.time,
+            priority: parsed.priority || "oddiy",
+            category: parsed.category || "shaxsiy",
+            repeat_type: "none",
+            repeat_interval: 1,
+        };
+
+        const response = await fetch("/api/notes/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRFToken": csrfToken,
+            },
+            body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) {
+            throw new Error(data.message || "Ovozli note saqlanmadi");
+        }
+        return data;
+    }
+
+    async function handleVoiceText(rawText) {
+        setVoiceStatus("Ovoz matnga aylandi. Endi title, sana va vaqt ajratilmoqda...", "info");
+        showVoiceResult(`🗣️ Tanishilgan matn: <strong>${escapeHTML(rawText)}</strong>`);
+
+        const parsed = await parseVoiceText(rawText);
+        fillMainFormFromParsed(parsed);
+
+        const preview = `
+            <div>🗣️ <strong>Matn:</strong> ${escapeHTML(parsed.raw_text)}</div>
+            <div>📝 <strong>Title:</strong> ${escapeHTML(parsed.title || "topilmadi")}</div>
+            <div>📅 <strong>Sana:</strong> ${escapeHTML(parsed.date || "qo‘lda tanlang")}</div>
+            <div>⏰ <strong>Vaqt:</strong> ${escapeHTML(parsed.time || "qo‘lda tanlang")}</div>
+            <div>🏷️ <strong>Category:</strong> ${escapeHTML(parsed.category || "shaxsiy")}</div>
+        `;
+        showVoiceResult(preview);
+
+        if (!parsed.can_create) {
+            const missingLabels = parsed.missing.map((item) => {
+                if (item === "title") return "sarlavha";
+                if (item === "date") return "sana";
+                if (item === "time") return "vaqt";
+                return item;
+            }).join(", ");
+            setVoiceStatus(`Aniq topilmagan maydonlar: ${missingLabels}. Maydonlarni qo‘lda to‘ldirib “Saqlash” tugmasini bosing.`, "error");
+            focusMissingField(parsed);
+            return;
+        }
+
+        setVoiceStatus("Sana va vaqt topildi. Ovozli reminder database'ga saqlanmoqda...", "info");
+        const created = await createNoteFromVoice(parsed);
+        setVoiceStatus(`✅ Ovozli reminder saqlandi: ${created.note.text} — ${created.note.remind_at_display}`, "success");
+
+        if (noteForm) {
+            noteForm.reset();
+            const categoryInput = document.getElementById("category");
+            const priorityInput = document.getElementById("priority");
+            if (categoryInput) categoryInput.value = "shaxsiy";
+            if (priorityInput) priorityInput.value = "oddiy";
+            if (repeatType) repeatType.value = "none";
+            updateCustomRepeatBox();
+        }
+
+        await loadNotes(false);
+        refreshDashboardStats();
+        refreshAIRecommendation();
+    }
+
+    if (!SpeechRecognition && voiceNoteBtn) {
+        voiceNoteBtn.disabled = true;
+        voiceNoteBtn.textContent = "🎙️ Browser qo‘llamaydi";
+        setVoiceStatus("Bu browser Speech Recognition API'ni qo‘llamayapti. Chrome yoki Edge browserda, localhost/HTTPS orqali ochib ko‘ring.", "error");
+    } else if (voiceNoteBtn) {
+        voiceRecognition = new SpeechRecognition();
+        voiceRecognition.lang = "uz-UZ";
+        voiceRecognition.interimResults = false;
+        voiceRecognition.continuous = false;
+        voiceRecognition.maxAlternatives = 1;
+
+        voiceRecognition.onstart = () => {
+            isListening = true;
+            voiceNoteBtn.classList.add("listening");
+            voiceNoteBtn.textContent = "🔴 Tinglanyapti...";
+            setVoiceStatus("Gapiring: masalan, “Ertaga soat 9 da matematika darsini eslat”.", "info");
+            showVoiceResult("");
+        };
+
+        voiceRecognition.onresult = async (event) => {
+            const rawText = event.results?.[0]?.[0]?.transcript || "";
+            if (!rawText.trim()) {
+                setVoiceStatus("Ovoz tushunilmadi. Qayta urinib ko‘ring.", "error");
+                return;
+            }
+
+            try {
+                await handleVoiceText(rawText);
+            } catch (error) {
+                setVoiceStatus(error.message || "Ovozli note yaratishda xatolik yuz berdi.", "error");
+            }
+        };
+
+        voiceRecognition.onerror = (event) => {
+            const messages = {
+                "not-allowed": "Mikrofonga ruxsat berilmadi. Browser permission sozlamasidan mikrofonni yoqing.",
+                "no-speech": "Ovoz eshitilmadi. Mikrofonni tekshirib, qayta urinib ko‘ring.",
+                "audio-capture": "Mikrofon topilmadi yoki band. Qurilmani tekshiring.",
+                "network": "Speech Recognition uchun internet/browser xatosi yuz berdi.",
+            };
+            setVoiceStatus(messages[event.error] || "Ovoz aniqlashda xatolik yuz berdi.", "error");
+        };
+
+        voiceRecognition.onend = () => {
+            isListening = false;
+            voiceNoteBtn.classList.remove("listening");
+            voiceNoteBtn.textContent = "🎙️ Gapirishni boshlash";
+        };
+
+        voiceNoteBtn.addEventListener("click", () => {
+            if (isListening) {
+                voiceRecognition.stop();
+                return;
+            }
+            try {
+                voiceRecognition.start();
+            } catch (error) {
+                setVoiceStatus("Mikrofon allaqachon ishlayapti yoki browser ruxsat bermadi.", "error");
+            }
+        });
+    }
+
+    function showEditError(message) {
+        if (!editModalError) return;
+        editModalError.textContent = message || "Xatolik yuz berdi";
+        editModalError.classList.add("show");
+    }
+
+    function clearEditError() {
+        if (!editModalError) return;
+        editModalError.textContent = "";
+        editModalError.classList.remove("show");
+    }
+
+    function openEditModal() {
+        clearEditError();
+        if (!editModalOverlay) return;
+        editModalOverlay.classList.add("show");
+        editModalOverlay.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeEditModal() {
+        if (!editModalOverlay) return;
+        editModalOverlay.classList.remove("show");
+        editModalOverlay.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+        clearEditError();
+    }
+
+    function setSelectValue(selectId, value) {
+        const select = document.getElementById(selectId);
+        if (select) select.value = value || "";
+    }
+
+    async function loadNoteForEdit(noteId) {
+        try {
+            const response = await fetch(`/api/notes/${noteId}/`, {
+                method: "GET",
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+            });
+            const data = await response.json();
+            if (!response.ok || !data.ok) {
+                throw new Error(data.message || "Eslatma topilmadi");
+            }
+
+            const note = data.note;
+            document.getElementById("editNoteId").value = note.id;
+            document.getElementById("editText").value = note.text || "";
+            document.getElementById("editDescription").value = note.description || "";
+            document.getElementById("editDate").value = note.edit_date || "";
+            document.getElementById("editTime").value = note.edit_time || "";
+            document.getElementById("editRepeatInterval").value = note.repeat_interval || 1;
+            setSelectValue("editPriority", note.priority);
+            setSelectValue("editCategory", note.category || "shaxsiy");
+            setSelectValue("editRepeatType", note.repeat_type || "none");
+            openEditModal();
+        } catch (error) {
+            alert(error.message || "Edit oynasi ochilmadi");
+        }
+    }
+
+    function updateCustomRepeatBox() {
+        const value = repeatType.value;
+
+        if (value === "custom_days" || value === "custom_weeks") {
+            customRepeatBox.classList.add("show");
+
+            if (value === "custom_days") {
+                repeatIntervalLabel.textContent = "Necha kunda takrorlansin?";
+                repeatHelp.textContent = "Masalan: 3 yozsangiz, eslatma har 3 kunda qayta keladi.";
+            } else {
+                repeatIntervalLabel.textContent = "Necha haftada takrorlansin?";
+                repeatHelp.textContent = "Masalan: 2 yozsangiz, eslatma har 2 haftada qayta keladi.";
+            }
+        } else {
+            customRepeatBox.classList.remove("show");
+        }
+    }
+
+    repeatType.addEventListener("change", updateCustomRepeatBox);
+    updateCustomRepeatBox();
+
+    function setText(selector, value) {
+        const element = document.querySelector(selector);
+        if (element) element.textContent = value;
+    }
+
+    function escapeHTML(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function updateDashboardStats(stats) {
+        if (!stats) return;
+
+        setText(".js-stat-today", stats.today_count ?? 0);
+        setText(".js-stat-completed", stats.completed_count ?? 0);
+        setText(".js-stat-overdue", stats.overdue_count ?? 0);
+        setText(".js-stat-total", stats.total_count ?? 0);
+        setText(".js-pending-count", stats.pending_count ?? 0);
+        setText(".js-completed-count", stats.completed_count ?? 0);
+
+        const nearestTitle = document.querySelector(".js-nearest-title");
+        const nearestTime = document.querySelector(".js-nearest-time");
+        const emptyState = document.querySelector(".js-dashboard-empty");
+
+        if (stats.nearest) {
+            if (nearestTitle) nearestTitle.textContent = stats.nearest.title;
+            if (nearestTime) nearestTime.textContent = `🕒 ${stats.nearest.time_display}`;
+        } else {
+            if (nearestTitle) nearestTitle.textContent = "Hozircha rejalashtirilgan eslatma yo‘q";
+            if (nearestTime) nearestTime.textContent = "—";
+        }
+
+        if (emptyState) {
+            emptyState.style.display = stats.is_empty ? "block" : "none";
+        }
+    }
+
+    async function refreshDashboardStats() {
+        try {
+            const response = await fetch("/api/dashboard/stats/", {
+                method: "GET",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            });
+
+            const data = await response.json();
+            if (response.ok && data.ok) {
+                updateDashboardStats(data.stats);
+            }
+        } catch (error) {
+            console.warn("Dashboard stats yangilanmadi:", error);
+        }
+    }
+
+    function updateAIRecommendation(insight) {
+        if (!insight) return;
+
+        const card = document.querySelector(".js-ai-card");
+        if (card) {
+            card.classList.remove("ai-warning", "ai-success", "ai-info", "ai-empty");
+            card.classList.add(`ai-${insight.level || "info"}`);
+        }
+
+        setText(".js-ai-summary", insight.summary || "AI tavsiya tayyor");
+        setText(".js-ai-primary", insight.primary_recommendation || "Hozircha tavsiya yo‘q.");
+        setText(".js-ai-score", `${insight.score ?? 0}%`);
+        setText(".js-ai-completion-rate", `${insight.metrics?.completion_rate ?? 0}%`);
+        setText(".js-ai-overdue-count", insight.metrics?.overdue_count ?? 0);
+        setText(".js-ai-snoozed-total", insight.metrics?.snoozed_total ?? 0);
+        setText(".js-ai-generated", insight.generated_at_display || "hozir");
+
+        const list = document.querySelector(".js-ai-recs");
+        if (list) {
+            const recs = insight.recommendations || [];
+            list.innerHTML = recs.map((rec) => `
+                <li>
+                    <span class="ai-rec-icon">${escapeHTML(rec.icon || "🤖")}</span>
+                    <div>
+                        <strong>${escapeHTML(rec.title || "Tavsiya")}</strong>
+                        <p>${escapeHTML(rec.text || "")}</p>
+                    </div>
+                </li>
+            `).join("");
+        }
+    }
+
+    async function refreshAIRecommendation() {
+        try {
+            const response = await fetch("/api/ai-recommendation/", {
+                method: "GET",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            });
+            const data = await response.json();
+            if (response.ok && data.ok) {
+                updateAIRecommendation(data.ai_recommendation);
+            }
+        } catch (error) {
+            console.warn("AI tavsiya yangilanmadi:", error);
+        }
+    }
+
+    function statusEmoji(statusValue) {
+        if (statusValue === "completed") return "✅";
+        if (statusValue === "overdue") return "⚠️";
+        if (statusValue === "sent") return "📨";
+        return "⏳";
+    }
+
+    function renderSnoozeOptions() {
+        return snoozeChoices.map((choice) => (
+            `<option value="${escapeHTML(choice.value)}">${escapeHTML(choice.label)}</option>`
+        )).join("");
+    }
+
+    function renderNoteCard(note) {
+        const completedClass = note.completed ? "is-completed" : "";
+        const completedButtonClass = note.completed ? "pending-mode" : "";
+        const completedButtonText = note.completed ? "↩️ Kutilmoqda" : "✅ Bajarildi";
+        const completedBadgeStyle = note.completedAtDisplay ? "" : "style=\"display:none;\"";
+        const snoozeStyle = note.completed ? "style=\"display:none;\"" : "";
+        const snoozeBadge = note.snoozedCount > 0
+            ? `<span class="badge badge-snooze">😴 Snooze: ${escapeHTML(note.snoozedCount)} marta</span>`
+            : "";
+        const lastSnooze = note.lastSnoozedAtDisplay
+            ? ` · 😴 Oxirgi snooze: ${escapeHTML(note.lastSnoozedAtDisplay)}`
+            : "";
+
+        return `
+            <div class="note-item priority-${escapeHTML(note.priority)} ${escapeHTML(note.category_class)} ${completedClass}" data-note-id="${escapeHTML(note.id)}">
+                <h3>${escapeHTML(note.text)}</h3>
+                <div class="note-desc">${escapeHTML(note.description_display)}</div>
+
+                <div class="badges">
+                    <span class="badge badge-priority priority-${escapeHTML(note.priority)}">📍 Muhimligi: ${escapeHTML(note.priority_display)}</span>
+                    <span class="badge badge-category ${escapeHTML(note.category_class)}">${escapeHTML(note.category_icon)} Category: ${escapeHTML(note.category_display)}</span>
+                    <span class="badge badge-repeat">🔁 Takrorlanish: ${escapeHTML(note.repeat_label)}</span>
+                    <span class="badge badge-status js-status-badge status-${escapeHTML(note.status_value)}">${statusEmoji(note.status_value)} ${escapeHTML(note.status)}</span>
+                    <span class="badge badge-completed js-completed-badge" ${completedBadgeStyle}>🏁 Bajarildi: <span class="js-completed-at">${escapeHTML(note.completedAtDisplay || "")}</span></span>
+                    ${snoozeBadge}
+                </div>
+
+                <div class="note-footer">
+                    <span class="note-time">⏰ Keyingi vaqt: ${escapeHTML(note.remind_at_display || "—")}${lastSnooze}</span>
+                    <div class="note-actions">
+                        <form class="snooze-form js-snooze-form" method="POST" action="/snooze/${escapeHTML(note.id)}/" ${snoozeStyle}>
+                            <input type="hidden" name="csrfmiddlewaretoken" value="${escapeHTML(csrfToken)}">
+                            <select name="snooze_option" class="snooze-select" aria-label="Snooze vaqtini tanlash">
+                                ${renderSnoozeOptions()}
+                            </select>
+                            <button type="submit" class="snooze-btn">😴 Snooze</button>
+                        </form>
+
+                        <button type="button" class="edit-btn js-edit-note" data-note-id="${escapeHTML(note.id)}">✏️ Tahrirlash</button>
+
+                        <button type="button" class="complete-toggle-btn js-complete-toggle ${completedButtonClass}" data-note-id="${escapeHTML(note.id)}" data-completed="${note.completed ? "true" : "false"}">${completedButtonText}</button>
+
+                        <form method="POST" action="/delete/${escapeHTML(note.id)}/" onsubmit="return confirm('Rostdan o‘chirmoqchimisiz?');">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="${escapeHTML(csrfToken)}">
+                            <button type="submit" class="delete-btn">O‘chirish</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function updateNoteCard(note) {
+        const card = document.querySelector(`.note-item[data-note-id="${note.id}"]`);
+        if (!card) return;
+
+        const statusBadge = card.querySelector(".js-status-badge");
+        const completedBadge = card.querySelector(".js-completed-badge");
+        const completedAt = card.querySelector(".js-completed-at");
+        const toggleBtn = card.querySelector(".js-complete-toggle");
+        const snoozeForm = card.querySelector(".js-snooze-form");
+
+        card.classList.toggle("is-completed", note.completed);
+
+        if (statusBadge) {
+            statusBadge.className = `badge badge-status js-status-badge status-${note.status_value}`;
+            statusBadge.textContent = `${statusEmoji(note.status_value)} ${note.status}`;
+        }
+
+        if (completedBadge && completedAt) {
+            if (note.completed && note.completedAtDisplay) {
+                completedAt.textContent = note.completedAtDisplay;
+                completedBadge.style.display = "inline-flex";
+            } else {
+                completedAt.textContent = "";
+                completedBadge.style.display = "none";
+            }
+        }
+
+        if (toggleBtn) {
+            toggleBtn.dataset.completed = note.completed ? "true" : "false";
+            toggleBtn.classList.toggle("pending-mode", note.completed);
+            toggleBtn.textContent = note.completed ? "↩️ Kutilmoqda" : "✅ Bajarildi";
+            toggleBtn.disabled = false;
+        }
+
+        if (snoozeForm) {
+            snoozeForm.style.display = note.completed ? "none" : "flex";
+        }
+    }
+
+    const filterInputs = {
+        search: document.getElementById("filterSearch"),
+        date: document.getElementById("filterDate"),
+        status: document.getElementById("filterStatus"),
+        priority: document.getElementById("filterPriority"),
+        category: document.getElementById("filterCategory"),
+        completed: document.getElementById("filterCompleted"),
+    };
+    const filterLoading = document.querySelector(".js-filter-loading");
+    const filterCount = document.querySelector(".js-filter-count");
+    const clearFiltersBtn = document.getElementById("clearFiltersBtn");
+    let filterTimer = null;
+
+    function buildFilterParams() {
+        const params = new URLSearchParams();
+        Object.entries(filterInputs).forEach(([key, input]) => {
+            if (input && input.value.trim()) {
+                params.set(key, input.value.trim());
+            }
+        });
+        return params;
+    }
+
+    function updateBrowserUrl(params) {
+        const query = params.toString();
+        const newUrl = query ? `${window.location.pathname}?${query}` : window.location.pathname;
+        window.history.replaceState({}, "", newUrl);
+    }
+
+    async function loadNotes(updateUrl = true) {
+        const params = buildFilterParams();
+        if (updateUrl) updateBrowserUrl(params);
+
+        if (filterLoading) filterLoading.classList.add("show");
+
+        try {
+            const response = await fetch(`/api/notes/?${params.toString()}`, {
+                method: "GET",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            });
+
+            const data = await response.json();
+            if (!response.ok || !data.ok) {
+                throw new Error("Filter natijasi olinmadi");
+            }
+
+            if (filterCount) filterCount.textContent = data.count;
+
+            if (!data.notes.length) {
+                noteList.innerHTML = `<div class="empty js-notes-empty">Natija topilmadi. Search yoki filterlarni tozalab ko‘ring.</div>`;
+                return;
+            }
+
+            noteList.innerHTML = data.notes.map(renderNoteCard).join("");
+        } catch (error) {
+            console.warn(error);
+            noteList.innerHTML = `<div class="empty js-notes-empty">Xatolik yuz berdi. Keyinroq qayta urinib ko‘ring.</div>`;
+        } finally {
+            if (filterLoading) filterLoading.classList.remove("show");
+        }
+    }
+
+    function debounceLoadNotes() {
+        clearTimeout(filterTimer);
+        filterTimer = setTimeout(() => loadNotes(true), 350);
+    }
+
+    filterInputs.search.addEventListener("input", debounceLoadNotes);
+    [filterInputs.date, filterInputs.status, filterInputs.priority, filterInputs.category, filterInputs.completed].forEach((input) => {
+        input.addEventListener("change", () => loadNotes(true));
+    });
+
+    clearFiltersBtn.addEventListener("click", () => {
+        Object.values(filterInputs).forEach((input) => input.value = "");
+        loadNotes(true);
+    });
+
+    if (editModalClose) editModalClose.addEventListener("click", closeEditModal);
+    if (editModalCancel) editModalCancel.addEventListener("click", closeEditModal);
+    if (editModalOverlay) {
+        editModalOverlay.addEventListener("click", (event) => {
+            if (event.target === editModalOverlay) closeEditModal();
+        });
+    }
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && editModalOverlay && editModalOverlay.classList.contains("show")) {
+            closeEditModal();
+        }
+    });
+
+    if (editNoteForm) {
+        editNoteForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            clearEditError();
+
+            const noteId = document.getElementById("editNoteId").value;
+            const payload = {
+                text: document.getElementById("editText").value.trim(),
+                description: document.getElementById("editDescription").value.trim(),
+                date: document.getElementById("editDate").value,
+                time: document.getElementById("editTime").value,
+                priority: document.getElementById("editPriority").value,
+                category: document.getElementById("editCategory").value,
+                repeat_type: document.getElementById("editRepeatType").value,
+                repeat_interval: document.getElementById("editRepeatInterval").value || 1,
+            };
+
+            if (!payload.text || !payload.date || !payload.time) {
+                showEditError("Sarlavha, sana va vaqt majburiy.");
+                return;
+            }
+
+            if (editModalSave) editModalSave.disabled = true;
+
+            try {
+                const response = await fetch(`/api/notes/${noteId}/`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                    body: JSON.stringify(payload),
+                });
+                const data = await response.json();
+                if (!response.ok || !data.ok) {
+                    throw new Error(data.message || "Eslatma yangilanmadi");
+                }
+
+                closeEditModal();
+                await loadNotes(false);
+                refreshDashboardStats();
+                refreshAIRecommendation();
+            } catch (error) {
+                showEditError(error.message || "Saqlashda xatolik yuz berdi");
+            } finally {
+                if (editModalSave) editModalSave.disabled = false;
+            }
+        });
+    }
+
+    noteList.addEventListener("click", async (event) => {
+        const editButton = event.target.closest(".js-edit-note");
+        if (editButton) {
+            loadNoteForEdit(editButton.dataset.noteId);
+            return;
+        }
+
+        const button = event.target.closest(".js-complete-toggle");
+        if (!button) return;
+
+        const noteId = button.dataset.noteId;
+        const isCompleted = button.dataset.completed === "true";
+        const endpoint = isCompleted
+            ? `/api/notes/${noteId}/pending/`
+            : `/api/notes/${noteId}/complete/`;
+
+        button.disabled = true;
+
+        try {
+            const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+                body: JSON.stringify({}),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.ok) {
+                throw new Error(data.message || "Status o‘zgarmadi");
+            }
+
+            updateNoteCard(data.note);
+            showAchievementToasts(data.achievements_unlocked || []);
+            if (!isCompleted && (!data.achievements_unlocked || !data.achievements_unlocked.length)) {
+                showToast("Reminder bajarildi deb belgilandi.");
+            }
+            if (isCompleted) {
+                showToast("Reminder qayta kutilmoqda holatiga qaytarildi.");
+            }
+            refreshDashboardStats();
+            updateAIRecommendation(data.ai_recommendation);
+            refreshAIRecommendation();
+            loadNotes(false);
+        } catch (error) {
+            showToast(error.message || "Xatolik yuz berdi", "error");
+            button.disabled = false;
+        }
+    });
+
+    refreshDashboardStats();
+    refreshAIRecommendation();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,512 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Achievements — Smart Note</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(-45deg, #e0f2fe, #ffffff, #bfdbfe, #eff6ff, #dbeafe);
+    background-size: 400% 400%;
+    animation: gradientMove 15s ease infinite;
+    color: #0f172a;
+    padding: 24px 16px;
+    overflow-x: hidden;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.22), transparent 65%);
+    filter: blur(12px);
+    z-index: -1;
+    animation: floatGlow 8s ease-in-out infinite alternate;
+}
+
+body::before {
+    top: -120px;
+    left: -120px;
+}
+
+body::after {
+    right: -130px;
+    bottom: -130px;
+    animation-delay: 2s;
+}
+
+@keyframes floatGlow {
+    from { transform: translateY(0) scale(1); }
+    to { transform: translateY(35px) scale(1.08); }
+}
+
+.container {
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo-wrap {
+    width: 86px;
+    height: 86px;
+    margin: 0 auto 14px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(147, 197, 253, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 20px 50px rgba(37, 99, 235, 0.20);
+    backdrop-filter: blur(18px);
+    overflow: hidden;
+    padding: 10px;
+}
+
+.logo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    margin-bottom: 16px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.68);
+    border: 1px solid rgba(147, 197, 253, 0.72);
+    color: #2563eb;
+    font-weight: 950;
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.13);
+    backdrop-filter: blur(14px);
+}
+
+.header h1 {
+    font-size: clamp(36px, 6vw, 56px);
+    background: linear-gradient(90deg, #1d4ed8, #38bdf8, #2563eb, #60a5fa);
+    background-size: 220% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 950;
+    letter-spacing: -1.4px;
+    animation: textShine 4s linear infinite;
+}
+
+@keyframes textShine {
+    to { background-position: 220% center; }
+}
+
+.header p {
+    color: #475569;
+    font-size: 17px;
+    margin-top: 8px;
+    font-weight: 700;
+}
+
+.main-nav {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 22px auto 0;
+}
+
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 16px;
+    border-radius: 999px;
+    color: #2563eb;
+    background: rgba(255,255,255,0.74);
+    border: 1px solid rgba(147,197,253,0.72);
+    text-decoration: none;
+    font-weight: 950;
+    box-shadow: 0 12px 28px rgba(37,99,235,0.12);
+    transition: 0.22s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: #ffffff;
+    background: linear-gradient(90deg,#2563eb,#38bdf8);
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px rgba(37,99,235,0.24);
+}
+
+.hero-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 32px;
+    padding: 28px;
+    background: rgba(255,255,255,0.82);
+    border: 1px solid rgba(147,197,253,0.60);
+    box-shadow: 0 24px 70px rgba(37,99,235,0.18);
+    backdrop-filter: blur(18px);
+    margin-bottom: 22px;
+}
+
+.hero-card::before {
+    content: "";
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    right: -90px;
+    top: -110px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(251,191,36,0.26), transparent 66%);
+}
+
+.hero-top {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 18px;
+    align-items: center;
+}
+
+.hero-title h2 {
+    font-size: clamp(28px, 4vw, 40px);
+    color: #0f172a;
+    letter-spacing: -0.8px;
+    margin-bottom: 8px;
+}
+
+.hero-title p {
+    color: #475569;
+    font-weight: 800;
+    line-height: 1.6;
+}
+
+.hero-score {
+    min-width: 190px;
+    padding: 18px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #eff6ff, #ffffff);
+    border: 1px solid #bfdbfe;
+    text-align: center;
+    box-shadow: 0 14px 34px rgba(37,99,235,0.12);
+}
+
+.score-number {
+    font-size: 42px;
+    line-height: 1;
+    font-weight: 950;
+    color: #2563eb;
+}
+
+.score-label {
+    margin-top: 7px;
+    color: #475569;
+    font-weight: 950;
+}
+
+.progress-wrap {
+    position: relative;
+    z-index: 1;
+    margin-top: 22px;
+}
+
+.progress-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: #334155;
+    font-weight: 950;
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 16px;
+    border-radius: 999px;
+    background: #dbeafe;
+    border: 1px solid #bfdbfe;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg,#fbbf24,#22c55e,#38bdf8);
+    width: {{ achievements_data.progress_percent }}%;
+    transition: 0.3s;
+}
+
+.badges-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 22px;
+}
+
+.achievement-card {
+    position: relative;
+    min-height: 270px;
+    border-radius: 28px;
+    padding: 22px;
+    background: rgba(255,255,255,0.84);
+    border: 1px solid rgba(147,197,253,0.58);
+    box-shadow: 0 18px 55px rgba(37,99,235,0.15);
+    backdrop-filter: blur(16px);
+    overflow: hidden;
+    transition: 0.25s;
+}
+
+.achievement-card::before {
+    content: "";
+    position: absolute;
+    width: 132px;
+    height: 132px;
+    right: -48px;
+    top: -48px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59,130,246,0.18), transparent 65%);
+}
+
+.achievement-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 26px 72px rgba(37,99,235,0.23);
+}
+
+.achievement-card.locked {
+    opacity: 0.62;
+    filter: grayscale(0.88);
+}
+
+.achievement-icon {
+    position: relative;
+    z-index: 1;
+    width: 62px;
+    height: 62px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 22px;
+    font-size: 30px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    box-shadow: 0 12px 28px rgba(37,99,235,0.12);
+    margin-bottom: 16px;
+}
+
+.achievement-card.achievement-orange .achievement-icon { background: #ffedd5; border-color: #fdba74; }
+.achievement-card.achievement-purple .achievement-icon { background: #ede9fe; border-color: #c4b5fd; }
+.achievement-card.achievement-blue .achievement-icon { background: #dbeafe; border-color: #93c5fd; }
+.achievement-card.achievement-green .achievement-icon { background: #dcfce7; border-color: #86efac; }
+
+.achievement-card h3 {
+    position: relative;
+    z-index: 1;
+    font-size: 21px;
+    color: #0f172a;
+    margin-bottom: 10px;
+    letter-spacing: -0.3px;
+}
+
+.achievement-card p {
+    position: relative;
+    z-index: 1;
+    color: #475569;
+    line-height: 1.55;
+    font-weight: 750;
+    min-height: 70px;
+}
+
+.badge-state {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 950;
+    margin: 14px 0;
+}
+
+.badge-state.unlocked {
+    color: #166534;
+    background: #dcfce7;
+    border: 1px solid #86efac;
+}
+
+.badge-state.locked {
+    color: #475569;
+    background: #e2e8f0;
+    border: 1px solid #cbd5e1;
+}
+
+.mini-progress {
+    position: relative;
+    z-index: 1;
+    margin-top: 8px;
+}
+
+.mini-progress-label {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 950;
+    margin-bottom: 8px;
+}
+
+.mini-progress-track {
+    height: 10px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    overflow: hidden;
+}
+
+.mini-progress-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg,#2563eb,#38bdf8);
+}
+
+.unlocked-date {
+    position: relative;
+    z-index: 1;
+    margin-top: 12px;
+    color: #64748b;
+    font-weight: 850;
+    font-size: 13px;
+}
+
+.empty-state {
+    padding: 30px;
+    border-radius: 28px;
+    background: rgba(255,255,255,0.82);
+    border: 2px dashed #93c5fd;
+    color: #475569;
+    text-align: center;
+    font-weight: 850;
+}
+
+.empty-icon {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+@media(max-width:1050px) {
+    .badges-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media(max-width:720px) {
+    body { padding: 18px 12px; }
+    .hero-top { grid-template-columns: 1fr; }
+    .hero-score { min-width: 0; }
+    .badges-grid { grid-template-columns: 1fr; }
+    .hero-card, .achievement-card { border-radius: 24px; padding: 20px; }
+    .progress-head { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <header class="header">
+        <div class="logo-wrap">
+            <img src="{% static 'image/note-avatar.png' %}" alt="Smart Note">
+        </div>
+        <div class="header-badge">🏆 Smart Note achievements</div>
+        <h1>Motivatsiya va yutuqlar</h1>
+        <p>Vazifalarni bajaring, badge oching va intizom seriyangizni kuchaytiring.</p>
+        <nav class="main-nav" aria-label="Asosiy navigatsiya">
+            <a href="{% url 'home' %}" class="nav-link">🏠 Bosh sahifa</a>
+            <a href="{% url 'today_plan' %}" class="nav-link">📅 Bugun rejasi</a>
+            <a href="{% url 'achievements' %}" class="nav-link active">🏆 Achievements</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero-card">
+            <div class="hero-top">
+                <div class="hero-title">
+                    <h2>Yutuqlar paneli</h2>
+                    <p>Ochilgan badge rangli ko‘rinadi, ochilmagan badge esa kulrang bo‘ladi. Vazifa “Bajarildi” qilinganda tizim achievement shartlarini avtomatik tekshiradi.</p>
+                </div>
+                <div class="hero-score">
+                    <div class="score-number">{{ achievements_data.unlocked_count }}/{{ achievements_data.total_count }}</div>
+                    <div class="score-label">badge ochildi</div>
+                </div>
+            </div>
+            <div class="progress-wrap">
+                <div class="progress-head">
+                    <span>Umumiy achievement progress</span>
+                    <span>{{ achievements_data.progress_percent }}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </section>
+
+        {% if achievements_data.is_empty %}
+            <div class="empty-state">
+                <div class="empty-icon">🏆</div>
+                <h3>Achievementlar hali tayyor emas</h3>
+                <p>Migrationni ishga tushiring: <b>python manage.py migrate</b></p>
+            </div>
+        {% else %}
+            <section class="badges-grid">
+                {% for badge in achievements_data.achievements %}
+                    <article class="achievement-card {{ badge.color_class }} {% if not badge.unlocked %}locked{% endif %}">
+                        <div class="achievement-icon">{{ badge.icon }}</div>
+                        <h3>{{ badge.title }}</h3>
+                        <p>{{ badge.description }}</p>
+
+                        {% if badge.unlocked %}
+                            <div class="badge-state unlocked">✅ Ochilgan</div>
+                        {% else %}
+                            <div class="badge-state locked">🔒 Hali ochilmagan</div>
+                        {% endif %}
+
+                        <div class="mini-progress">
+                            <div class="mini-progress-label">
+                                <span>{{ badge.progress_label }}</span>
+                                <span>{{ badge.progress_percent }}%</span>
+                            </div>
+                            <div class="mini-progress-track">
+                                <div class="mini-progress-fill" style="width: {{ badge.progress_percent }}%;"></div>
+                            </div>
+                        </div>
+
+                        {% if badge.unlocked and badge.unlocked_at_display %}
+                            <div class="unlocked-date">🏁 Ochilgan vaqt: {{ badge.unlocked_at_display }}</div>
+                        {% endif %}
+                    </article>
+                {% endfor %}
+            </section>
+        {% endif %}
+    </main>
+</div>
+</body>
+</html>
